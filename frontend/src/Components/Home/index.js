@@ -26,6 +26,10 @@ const Home = () => {
     fetchData();
   }, []);
 
+  const handleViewJobClick = (jobId) => {
+    navigate(`/Jobs/jobDetails?jobId=${jobId}`);
+  };
+
   const carouselSettings = {
     dots: true,
     infinite: true,
@@ -45,7 +49,7 @@ const Home = () => {
       <section className="bg-blue-600 text-white text-center py-20">
         <h1 className="text-4xl font-bold">Find Top Freelancers & Build Amazing Projects</h1>
         <p className="mt-4 text-xl">Connect with professionals for your next project</p>
-        <button className="mt-8 px-6 py-3 bg-yellow-500 text-black font-semibold rounded-full hover:bg-yellow-400 transition duration-300"  onClick={() => navigate("/authentication/login")}>
+        <button className="mt-8 px-6 py-3 bg-yellow-500 text-black font-semibold rounded-full hover:bg-yellow-400 transition duration-300" onClick={() => navigate("/authentication/login")}>
           Get Started
         </button>
       </section>
@@ -57,22 +61,20 @@ const Home = () => {
           <Slider {...carouselSettings}>
             {freelancers.map((freelancer) => (
               <div key={freelancer._id} className="px-3">
-              <div className="bg-white shadow-xl rounded-2xl p-3 text-center h-[300px] flex flex-col items-center justify-between overflow-hidden">
-                <img
-                  src={`https://res.cloudinary.com/dg6a6mitp/image/upload/v1746047520/${freelancer.image}`|| "/default-avatar.png"}
-                  alt={freelancer.name}
-                  className="w-28 mt-2 h-28 rounded-full object-cover mb-3 border-4 border-blue-200"
-                />
-                <div className="flex flex-col items-center">
-                  <h3 className="text-lg font-semibold text-gray-800">{freelancer.name}</h3>
-                  <p className="text-sm text-gray-500 mb-2">{freelancer.profession || "Freelancer"}</p>
+                <div className="bg-white rounded-xl shadow-md hover:shadow-2xl transition duration-300 p-5 flex flex-col items-center text-center h-[360px]">
+                  <img
+                    src={`https://res.cloudinary.com/dg6a6mitp/image/upload/v1746047520/${freelancer.image}` || "/default-avatar.png"}
+                    alt={freelancer.name}
+                    className="w-28 h-28 rounded-full object-cover border-4 border-blue-200 mb-4"
+                  />
+                  <h3 className="text-lg font-bold text-gray-800">{freelancer.name}</h3>
+                  <p className="text-gray-500 text-sm">{freelancer.email}</p>
+                  <p className="text-gray-500 text-sm">{freelancer.role || "Freelancer"}</p>
+                 <div> <p className="text-gray-400 text-xs mt-1 mb-4">{freelancer.bio}</p></div>
                  
                 </div>
-                <button className="px-4 py-2 bg-blue-600 text-white text-sm rounded-full hover:bg-blue-700 transition">
-                  View Profile
-                </button>
+
               </div>
-            </div>
 
             ))}
           </Slider>
@@ -85,20 +87,26 @@ const Home = () => {
         <div className="px-5">
           <Slider {...carouselSettings}>
             {clients.map((client) => (
-              <div key={client._id} className="px-3">
-                <div className="bg-white shadow-lg rounded-xl p-6 text-center">
-                  <img
-                    src={`https://res.cloudinary.com/dg6a6mitp/image/upload/v1746047520/${client.image}`}
-                    alt={client.name}
-                    className="w-32 h-32 rounded-full mx-auto mb-4"
-                  />
-                  <h3 className="text-xl font-semibold text-gray-800">{client.name}</h3>
-                  <p className="text-gray-500">{client.description}</p>
-                  <button className="mt-6 px-6 py-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition duration-300">
-                    View Jobs
-                  </button>
-                </div>
-              </div>
+               <div key={client._id} className="px-3">
+               <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 flex flex-col items-center h-[380px]">
+                 <div className="relative">
+                   <img
+                     src={`https://res.cloudinary.com/dg6a6mitp/image/upload/v1746047520/${client.image}`}
+                     alt={client.name}
+                     className="w-28 h-28 rounded-full object-cover border-4 border-green-200 shadow-md"
+                   />
+                  
+                 </div>
+         
+                 <h3 className="text-lg font-semibold text-gray-800 mt-4">{client.name}</h3>
+                 <p className="text-gray-500 text-sm text-center mt-2 line-clamp-3">{client.email}</p>
+                 <p className="text-gray-500 text-sm text-center mt-2 line-clamp-3">
+                   {client.bio || "Trusted partner working on innovative projects across industries."}
+                 </p>
+         
+                
+               </div>
+             </div>
             ))}
           </Slider>
         </div>
@@ -109,10 +117,10 @@ const Home = () => {
         <h2 className="text-3xl font-bold mb-6">Ready to Start Your Next Project?</h2>
         <p className="text-xl mb-6">Find skilled freelancers or post your job today!</p>
         <div className="flex justify-center space-x-6">
-          <button className="px-8 py-3 bg-yellow-500 text-black font-semibold rounded-full hover:bg-yellow-400 transition duration-300"  onClick={() => navigate("/authentication/login")}>
+          <button className="px-8 py-3 bg-yellow-500 text-black font-semibold rounded-full hover:bg-yellow-400 transition duration-300" onClick={() => navigate("/authentication/login")}>
             Find a Freelancer
           </button>
-          <button className="px-8 py-3 bg-transparent border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:text-black transition duration-300"  onClick={() => navigate("/authentication/login")}>
+          <button className="px-8 py-3 bg-transparent border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:text-black transition duration-300" onClick={() => navigate("/authentication/login")}>
             Post a Job
           </button>
         </div>
