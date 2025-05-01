@@ -15,7 +15,8 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5000",
+    //baseURL: 'https://freelance-platform-finalproject.onrender.com/api',
+    origin: 'https://freelance-platform-finalproject.onrender.com',
     methods: ["GET", "POST"],
   },
 });
