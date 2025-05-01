@@ -58,7 +58,6 @@ export const Login = () => {
       toast.error("Please enter a valid email and password.");
     }
   };
-
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-start px-4 login-container">
     <div class="w-full max-w-[400px] ml-[120px] bg-white/40 p-4 rounded-xl shadow-lg backdrop-blur-sm">
