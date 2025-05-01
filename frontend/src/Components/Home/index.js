@@ -14,7 +14,7 @@ const Home = () => {
     const fetchData = async () => {
       try {
         const freelancerRes = await axiosInstance.get('/users/getFreelancers');
-        //console.log("freelancers data:", freelancerRes);
+        console.log("freelancers data:", freelancerRes);
         const clientRes = await axiosInstance.get('/users/viewClient');
         setFreelancers(freelancerRes.data.data);
         setClients(clientRes.data.data);
