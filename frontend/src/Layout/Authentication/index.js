@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { userLogin } from "../../apiUtils/userApi";
 import { toast } from 'react-toastify';
+import '../Authentication/login.css';
 
 
 
@@ -60,7 +61,7 @@ export const Login = () => {
   };
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-start px-4 login-container">
-    <div class="w-full max-w-[400px] ml-[120px] bg-white/40 p-4 rounded-xl shadow-lg backdrop-blur-sm">
+    <div className="w-full max-w-[400px] ml-[120px] bg-white/40 p-4 rounded-xl shadow-lg backdrop-blur-sm">
   
         <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
