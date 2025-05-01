@@ -1,0 +1,10 @@
+.login-container {
+    background-image: url('https://res.cloudinary.com/dg6a6mitp/image/upload/v1746119196/login_pht6jj.jpg');
+    background-size: cover;
+    background-position: center;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
