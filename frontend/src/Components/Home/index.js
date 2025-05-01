@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosConfig/axiosConfig';
 import Slider from 'react-slick';
+
 
 const Home = () => {
   const [freelancers, setFreelancers] = useState([]);
   const [clients, setClients] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const freelancerRes = await axiosInstance.get('/users/getFreelancers');
         //console.log("freelancers data:", freelancerRes);
-        const clientRes = await axiosInstance.get('/users/viewClients');
+        const clientRes = await axiosInstance.get('/users/viewClient');
         setFreelancers(freelancerRes.data.data);
         setClients(clientRes.data.data);
       } catch (error) {
@@ -41,7 +45,7 @@ const Home = () => {
       <section className="bg-blue-600 text-white text-center py-20">
         <h1 className="text-4xl font-bold">Find Top Freelancers & Build Amazing Projects</h1>
         <p className="mt-4 text-xl">Connect with professionals for your next project</p>
-        <button className="mt-8 px-6 py-3 bg-yellow-500 text-black font-semibold rounded-full hover:bg-yellow-400 transition duration-300">
+        <button className="mt-8 px-6 py-3 bg-yellow-500 text-black font-semibold rounded-full hover:bg-yellow-400 transition duration-300"  onClick={() => navigate("/authentication/login")}>
           Get Started
         </button>
       </section>
@@ -105,10 +109,10 @@ const Home = () => {
         <h2 className="text-3xl font-bold mb-6">Ready to Start Your Next Project?</h2>
         <p className="text-xl mb-6">Find skilled freelancers or post your job today!</p>
         <div className="flex justify-center space-x-6">
-          <button className="px-8 py-3 bg-yellow-500 text-black font-semibold rounded-full hover:bg-yellow-400 transition duration-300">
+          <button className="px-8 py-3 bg-yellow-500 text-black font-semibold rounded-full hover:bg-yellow-400 transition duration-300"  onClick={() => navigate("/authentication/login")}>
             Find a Freelancer
           </button>
-          <button className="px-8 py-3 bg-transparent border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:text-black transition duration-300">
+          <button className="px-8 py-3 bg-transparent border-2 border-white text-white font-semibold rounded-full hover:bg-white hover:text-black transition duration-300"  onClick={() => navigate("/authentication/login")}>
             Post a Job
           </button>
         </div>

@@ -3,7 +3,7 @@ const router = express.Router();
 const { verifyToken, checkRole } = require("../Middlewares/auth");
 const {deleteJob,deleteUser,jobReport,userReport} = require("../Controllers/adminController");
 const {
-    addReview,sendMessage,getLastPostedJobIdviewClient,viewJob,jobProfile,clientProfile,getBidDetails} = require("../Controllers/userController");
+    addReview,viewClient,sendMessage,getLastPostedJobIdviewClient,viewJob,jobProfile,clientProfile,getBidDetails} = require("../Controllers/userController");
 const {getFreelancerCount,getJobCount,getOpenProjectCount} = require('../Controllers/dashboardController')
 const { myProposal,viewProposals,addProposal,freelancerProfile,inviteFreelancer,bid} = require("../Controllers/freelancerController");
 const { createPayment,initialPaymentRelease,markAsCompleted} = require("../Controllers/paymentController");

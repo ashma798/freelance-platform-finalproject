@@ -58,7 +58,7 @@ const routes = createBrowserRouter([
    { path: "/Home", element: <Home/> },
     { path: "/authentication/login", element: <Login /> },
     { path: "/authentication/register", element: <Register /> },
-    { path: "/", element: <Navigate to="/authentication/login"/> },
+    { path: "/", element: <Home/> },
     {  path: "/Admin/admindashboard",element: <ProtectedRoute element={<Layout><Admindashboard /></Layout>} />, },
     {  path: "/Admin/clientReport",element: <ProtectedRoute element={<Layout><ClientReport/></Layout>} />, },
     {  path: "/Admin/jobReport",element: <ProtectedRoute element={<Layout><JobReport /></Layout>} />, },
