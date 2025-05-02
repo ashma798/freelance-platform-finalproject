@@ -26,15 +26,14 @@ const bidSchema = new mongoose.Schema({
     status:
     {
         type: String,
-        enum: ['pending', 'accepted'],
+        enum: ['pending', 'accepted', 'partial', 'paid'],
         default: 'pending',
         required: false
 
     }
 
 
-},
-    {
+},  {
         timeStamps: true
     });
 
