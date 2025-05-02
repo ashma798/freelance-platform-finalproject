@@ -70,15 +70,20 @@ initialPaymentRelease = async (req, res) => {
 markAsCompleted = async (req, res) => {
   const { jobId } = req.params; 
   try {
-    const updateJob = await Job.findByIdAndUpdate(jobId, { status: 'completed' });
+    const updateJob = await Job.findByIdAndUpdate(jobId, { status: 'completed' }, { new: true });
     if (!updateJob) return res.status(404).json({ error: 'Job not found' });
 
     const freelancer_id = updateJob.freelancer_id;
     const client_id = updateJob.client_id;
     const bid = await Bid.findOne({ jobId }); 
-    const bidId = bid?._id;
+   const bidId = bid?._id;
 
     const client = await userModel.findById(client_id);
+    if (!client) {
+      return res.status(404).json({ message: 'Client not found' });
+    }
+    
+    console.log("Client email:", client.email); 
     const freelancer = await userModel.findById(freelancer_id);
 
     const finalPayLink = `http://localhost:3000/Payment/Payment?bidId=${bidId}`;

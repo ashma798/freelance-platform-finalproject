@@ -50,7 +50,7 @@ const Payment = () => {
         card: elements.getElement(CardElement),
       },
     });
-    console.log(result); 
+    console.log(result.paymentIntent); 
 
     if (result.error) {
       alert(result.error.message);
