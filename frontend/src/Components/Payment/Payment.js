@@ -28,7 +28,7 @@ const Payment = () => {
           jobId : res.data.data.job_id._id,
           amount: halfAmount,
         });
-      //  console.log("Stripe Response:", stripeRes.data);
+      // console.log("Stripe Response:", stripeRes.data);
         setClientSecret(stripeRes.data.clientSecret);
        
       }
@@ -65,7 +65,7 @@ const Payment = () => {
       });
 
       toast.success('Payment successful!');
-      navigate('/client/dashboard');
+      navigate('Client/clientdashboard');
     }
   }
   return (
