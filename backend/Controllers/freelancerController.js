@@ -4,6 +4,7 @@ const userModel = require("../Models/userModel");
 const proposalModel = require("../Models/proposalsModel");
 const freelancerProfileModel = require("../Models/freelancerProfileModel");
 const bidModel = require("../Models/bidModel");
+const invitationModel = require("../Models/invitationModel");
 const sendEmail = require("../Utils/sendEmail");
 
 bid = async (req, res) => {
@@ -26,8 +27,7 @@ bid = async (req, res) => {
             const client = newBid.client_id;
             const bidId = newBid._id;
             const freelancer = await userModel.findById(newBid.freelancer_id);
-          
-            const freelancerName = freelancer.name;
+           const freelancerName = freelancer.name;
             const freelancerEmail = freelancer.email;
  
             const acceptBidLink = `http://localhost:3000/Client/AcceptBid?jobId=${job_id}&freelancerId=${client_id}&clientId=${freelancer._id}&bidId=${bidId}`;
@@ -127,16 +127,12 @@ bid = async (req, res) => {
         freelancerProfile = async (req, res) => {
             try {
                 const { freelancerId } = req.params;
-
-                console.log("Received freelancerId:", freelancerId);
                 const user = await userModel.findById(freelancerId).select('-password');
-                console.log("Received user:", user._id);
+               
                 if (!user || user.role !== 'freelancer') {
                     return res.status(404).json({ message: 'Freelancer not found' });
                 }
                 const freelancerProfile = await freelancerProfileModel.findOne({ user_id: user._id });
-
-                console.log("Received freelancer:", freelancerProfile);
                 if (!freelancerProfile) {
                     return res.status(404).json({ message: 'Freelancer profile not found' });
                 }
@@ -148,13 +144,11 @@ bid = async (req, res) => {
                     email: user.email,
                     country: user.country,
                     image: user.image,
-                    // headline: freelancerProfile.headline,
-                    // summary: freelancerProfile.summary,
                     skills: freelancerProfile.skills,
                     hourly_rate: freelancerProfile.hourly_rate,
-                    portfolio: freelancerProfile.portfolio
-                };
-                console.log("freelan:", freelancerData);
+                    portfolio: freelancerProfile.portfolio_links,
+                    bio:freelancerProfile.bio                               };
+             
                 return res.status(200).json({
                     success: true,
                     data: freelancerData
@@ -339,7 +333,7 @@ bid = async (req, res) => {
 
                 return res.status(200).json({
                     success: true,
-                    statusCode: 200,
+                        statusCode: 200,
                     message: "Proposals retrieved successfully",
                     count: allProposals.length,
                     data: allProposals

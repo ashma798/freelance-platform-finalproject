@@ -49,7 +49,7 @@ userRegistration = async (req, res) => {
                             hourly_rate,
                             experience,
                             skills: skills.split(',').map(skill => skill.trim()),
-                            bio: bio 
+                            bio 
                         });
                     } else if (role === 'client') {
                         const {company_name,website,bio } = req.body;
