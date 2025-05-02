@@ -21,6 +21,7 @@ const Bid = () => {
 
     const jobId = queryParams.get('jobId');
     setJobId(jobId);
+    console.log(jobId);
     const clientId = queryParams.get('clientId');
     setClientId(clientId);
     const freelancerId = queryParams.get('freelancerId');

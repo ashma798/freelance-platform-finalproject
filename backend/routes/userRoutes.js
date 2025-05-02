@@ -55,9 +55,8 @@ router.post('/bid',verifyToken,checkRole(['freelancer']),bid);
 router.post('/addProposal',verifyToken,checkRole('freelancer'),addProposal);
 router.get('/myProposal',verifyToken,checkRole(['client','freelancer']),myProposal);
 router.get('/getMessages',verifyToken,checkRole(['client','freelancer']),getMessages);
-router.get('/jobProfile/:jobId',verifyToken,checkRole(['freelancer']),jobProfile);
+router.get('/jobProfile/:jobId',verifyToken,checkRole(['freelancer','client']),jobProfile);
 router.post('/markAsCompleted/:jobId',verifyToken,checkRole(['freelancer']),markAsCompleted);
-
 
 /*PAYMENT ROUTES*/
 
