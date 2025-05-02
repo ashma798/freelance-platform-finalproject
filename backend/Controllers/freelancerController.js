@@ -26,7 +26,6 @@ bid = async (req, res) => {
             const client = newBid.client_id;
             const bidId = newBid._id;
             const freelancer = await userModel.findById(newBid.freelancer_id);
-            console.log(freelancer);
           
             const freelancerName = freelancer.name;
             const freelancerEmail = freelancer.email;

@@ -23,7 +23,7 @@ const Bid = () => {
     setJobId(jobId);
     const clientId = queryParams.get('clientId');
     setClientId(clientId);
-    const freelancerId = queryParams.get('clientId');
+    const freelancerId = queryParams.get('freelancerId');
     setFreelancerId(freelancerId);
   }, [location]);
 
@@ -87,13 +87,16 @@ const Bid = () => {
   if (!jobData) {
     return <div>No Job Found</div>;
   }
+    const cloudinaryImageUrl = clientData?.image 
+  ? `https://res.cloudinary.com/dg6a6mitp/image/upload/v1746047520/${clientData?.image}`
+  : '/path/to/default-image.jpg';
 
   return (
     <div className="container mx-auto py-10 px-5">
       <div className="flex justify-between items-start mb-8">
-        <h1 className="text-3xl font-extrabold text-gray-900">{jobData.job_title}</h1>
+        <h1 className="text-3xl font-extrabold text-gray-900">{jobData?.job_title}</h1>
         <div className="text-right">
-          <p className="text-xl font-semibold text-green-500">${jobData.budget?.$numberDecimal}</p>
+          <p className="text-xl font-semibold text-green-500">₹{jobData.budget?.$numberDecimal}</p>
         </div>
       </div>
 
@@ -117,10 +120,20 @@ const Bid = () => {
 
           {/* Right Section - Client Info */}
           <div className="lg:w-1/3 bg-gray-100 p-6 rounded-xl shadow-md">
-            <h3 className="text-2xl font-semibold text-gray-800">About the Client</h3>
-            <p className="text-gray-700 mt-3">
+            <h3 className="text-2xl font-semibold text-center text-gray-800">About the Client</h3>
+            <div className="flex justify-center mt-4">
+            <img
+    className="w-40 h-40 rounded-full justify-center object-cover border-4 border-indigo-500 mt-2 me-5"
+    src={cloudinaryImageUrl}
+    alt="Profile"
+  />
+  </div>
+  <div className="mt-4 text-center">
+    <h2 className="text-3xl font-bold text-gray-800">{clientData?.name}</h2>
+    <p className="text-indigo-600 text-lg">{clientData?.email}</p>
+  </div>
              <p>{clientData?.bio}</p> 
-            </p>
+            
            
           </div>
         </div>

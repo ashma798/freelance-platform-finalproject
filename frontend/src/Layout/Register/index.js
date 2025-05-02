@@ -202,11 +202,10 @@ const Register = () => {
                 value={skills}
                 onChange={(e) => setSkills(e.target.value)}
               />
-              <input
-                className="input-classy md:col-span-2"
-                type="text"
+             <textarea
+                className="input-classy md:col-span-2 resize-none h-28"
                 placeholder="Bio"
-                value={about}
+               value={about}
                 onChange={(e) => setAbout(e.target.value)}
               />
             </>

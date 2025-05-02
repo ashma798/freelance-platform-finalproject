@@ -9,6 +9,7 @@ const FreelancerNavbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const [userName, setUserName] = useState('');
+  const [freelancerId, setFreelancerId] = useState('');
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('@user'));
@@ -54,9 +55,9 @@ const FreelancerNavbar = () => {
           <li><Link to="/Freelancer/freelancerdashboard" className="block py-2 hover:text-gray-300">Dashboard</Link></li>
           <li><Link to="/Jobs/Jobs" className="block py-2 hover:text-gray-300">Browse Jobs</Link></li>
           <li><Link to="/Freelancer/getMessages" className="block py-2 hover:text-gray-300">Inbox</Link></li>
-          <li><Link to="#" className="block py-2 hover:text-gray-300">My Bids</Link></li>
-          <li><Link to="#" className="block py-2 hover:text-gray-300">My Work</Link></li>
-          <li><Link to="#" className="block py-2 hover:text-gray-300">Free Credit</Link></li>
+          <li><Link to="/Freelancer/getBidDetails" className="block py-2 hover:text-gray-300">My Bids</Link></li>
+          <li><Link to="/Freelancer/joblist" className="block py-2 hover:text-gray-300">My Work</Link></li>
+          
         </ul>
 
         {/* Right-side Profile Info */}
@@ -75,7 +76,8 @@ const FreelancerNavbar = () => {
           {dropdownOpen && (
             <ul className="absolute right-0 mt-2 w-44 bg-white text-black rounded shadow-md z-50">
               <li>
-                <Link to="/Freelancer/freelancerProfile" className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
+                  
+                <Link to={`/Freelancer/freelancerProfile/${freelancerId}`}   className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
               </li>
               <li>
                 <Link to="#" className="block px-4 py-2 hover:bg-gray-100">Wallet</Link>

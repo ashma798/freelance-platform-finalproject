@@ -83,7 +83,7 @@ const ClientProfile = () => {
 
               <div>
                 <h4 className="font-semibold">Location:</h4>
-                <p>{clientData.location || 'Not Provided'}</p>
+                <p>{clientData.country || 'Not Provided'}</p>
               </div>
 
               <div className="md:col-span-2">

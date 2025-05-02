@@ -13,7 +13,7 @@ const createPayment = async (req, res) => {
   try {
   
     const { clientId, jobId, amount } = req.body;
-    console.log("cid",clientId);
+
     if (!clientId || !jobId || !amount) {
       return res.status(400).json({ message: "Missing required fields" });
     }
@@ -84,9 +84,9 @@ markAsCompleted = async (req, res) => {
     const finalPayLink = `http://localhost:3000/Payment/Payment?bidId=${bidId}`;
 
     await sendEmail({
-      from: freelancer.email,
+      fromEmail: freelancer.email,
       to: client.email,
-      subject: `${freelancer.name} has invited you to release final payment`,
+      subject: `${freelancer.name} has requested you to release final payment`,
       html: `
         <p>Hi ${client.name},</p>
         <p>${freelancer.name} has marked the project as completed. Please release the final payment.</p>
@@ -129,4 +129,3 @@ module.exports = {
   initialPaymentRelease,
   createPayment
 }
-

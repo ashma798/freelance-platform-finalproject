@@ -12,7 +12,7 @@ const Jobs = () => {
     try {
       const jobListResponse = await axiosInstance.get('/users/viewJob');
       setJobList(jobListResponse.data.data);
-      console.log(jobListResponse.data.data);
+     // console.log(jobListResponse.data.data);
     } catch (err) {
       toast.error('Error in  fetching jobs');
     }
@@ -29,7 +29,7 @@ const Jobs = () => {
     )
   );
   const handleBidClick = () => {
-    navigate('/Freelancer/Bid');
+ //   navigate(`/Freelancer/Bid/${jobId}`);
   };
 
   return (
@@ -63,8 +63,8 @@ const Jobs = () => {
               <div className="flex-1 w-full sm:w-auto">
                 <div className="flex items-center gap-3 mb-2">
                   <h5 className="text-xl font-bold text-gray-800">{job.job_title}</h5>
-                  <button className="bg-green-500 hover:bg-green-600 text-white text-sm font-semibold px-3 py-1 rounded-full"   onClick={handleBidClick}>
-                    Free to Bid
+                  <button className="bg-green-500 hover:bg-green-600 text-white text-sm font-semibold px-3 py-1 rounded-full">
+                   {job.status}
                   </button>
                 </div>
                 <p className="text-gray-600 mb-3">{job.description}</p>

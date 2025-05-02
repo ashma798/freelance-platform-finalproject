@@ -39,7 +39,6 @@ if(bidId){
 
   
   const handleAcceptBidClick = () => {
-    //console.log("Navigating to Payment with bidId:", bidId); 
     navigate(`/Payment/${bidId}`);
   }
    
@@ -59,7 +58,7 @@ if(bidId){
         <div className="flex flex-col md:flex-row md:items-center gap-6 mb-8">
             
           <img
-              src={`http://localhost:5000/uploads/${bidData.freelancer_id?.image}`}
+         src={`https://res.cloudinary.com/dg6a6mitp/image/upload/v1746047520/${bidData.freelancer_id?.image}`}
             alt="Freelancer Profile"
             className="w-24 h-24 rounded-full object-cover border-4 border-indigo-500"
           />

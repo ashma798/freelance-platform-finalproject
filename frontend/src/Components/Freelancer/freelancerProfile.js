@@ -17,7 +17,6 @@ const FreelancerProfile = () => {
       try {
         const res = await axiosInstance.get(`/users/freelancerProfile/${freelancerId}`);
         setFreelancerData(res.data.data);
-       
       } catch (error) {
         toast.error('Error fetching freelancer profile');
       } finally {
@@ -29,11 +28,6 @@ const FreelancerProfile = () => {
       fetchFreelancerProfile();
     }
   }, [freelancerId]);
-  
-  const toggleChat = () => {
-    setOpenChat(!openChat);
-  };
-
 
   if (loading) return <div className="text-center mt-5">Loading...</div>;
   if (!freelancerData) return <div className="text-center text-red-500 mt-5">Profile not found</div>;
@@ -55,7 +49,7 @@ const FreelancerProfile = () => {
             </div>
 
             {/* Details Section */}
-            <div className="mt-4 md:mt-0">
+            <div className="mt-4 md:mt-0 flex-1">
               {freelancerData.phone && (
                 <p className="text-lg text-gray-700">
                   <strong>Contact me:</strong> {freelancerData.phone}
@@ -106,21 +100,23 @@ const FreelancerProfile = () => {
                 <h4 className="text-xl font-semibold text-blue-500">About</h4>
                 <p className="text-gray-700"><strong>Bio:</strong> {freelancerData.bio}</p>
               </div>
-              <div>
-    
-      
-              <button
-              
-        onClick={()=>toggleChat(freelancerData._id)}
-        className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg z-50"
-      >
-        💬 Chat
-      </button>
-
-      {openChat && <Chat onClose={() => setOpenChat(false)} />}
-    </div>
             </div>
           </div>
+
+          {/* Floating Chat Button */}
+          <button
+            onClick={() => setOpenChat(true)}
+            className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg z-50"
+          >
+            💬 Chat
+          </button>
+
+          {openChat && (
+            <Chat
+              freelancerId={freelancerId}
+              onClose={() => setOpenChat(false)}
+            />
+          )}
         </div>
       </div>
     </div>
@@ -128,19 +124,3 @@ const FreelancerProfile = () => {
 };
 
 export default FreelancerProfile;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
