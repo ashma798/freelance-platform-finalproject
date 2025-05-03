@@ -49,15 +49,39 @@ initialPaymentRelease = async (req, res) => {
   try {
     await Wallet.updateOne(
       { user_id: freelancerId },
-      { $inc: { balance: amount } },
-      { upsert: true }
-    )
-    await Wallet.updateOne(
-      { user_id: clientId },
-      { $inc: { balance: -amount } },
+      {
+        $inc: { balance: amount },
+        $push: {
+          transactions: {
+            job_id: jobId,
+            amount,
+            type: 'credit',
+            status: 'pending',
+            date: new Date()
+          }
+        }
+      },
       { upsert: true }
     );
-    await Job.findByIdAndUpdate(jobId, { status: 'in_progress' });
+    
+   
+    await Wallet.updateOne(
+      { user_id: clientId },
+      {
+        $inc: { balance: -amount },
+        $push: {
+          transactions: {
+            job_id: jobId,
+            amount,
+            type: 'debit',
+            status: 'hold',
+            date: new Date()
+          }
+        }
+      },
+      { upsert: true }
+    );
+    await Job.findByIdAndUpdate(jobId, { status: 'partialpaid' });
 
     res.status(200).json({ message: '50% released to freelancer' });
   } catch (err) {
@@ -76,11 +100,48 @@ markAsCompleted = async (req, res) => {
     const freelancer_id = freelancerId;
     const client_id = updateJob.client_id;
     const bid = await Bid.findOneAndUpdate(
-      { job_id: jobId, status: 'partialpaid' },
-      
+      { job_id: jobId, status: 'paid' }
+    );
+    const bidId = bid?._id;
+   const amount = bid.bid_amount / 2;
+
+   
+   await Wallet.updateOne(
+    { user_id: freelancerId },
+    {
+      $inc: { balance: amount },
+      $push: {
+        transactions: {
+          job_id: jobId,
+          amount,
+          type: 'credit',
+          status: 'released'
+        }
+      }
+    },
+    { upsert: true }
+  );
+
+  // Update client wallet
+  await Wallet.updateOne(
+    { user_id: client_id },
+    {
+      $inc: { balance: -amount },
+      $push: {
+        transactions: {
+          job_id: jobId,
+          amount,
+          type: 'debit',
+          status: 'paid'
+        }
+      }
+    },
+    { upsert: true }
+  );
+  
    
     //const bid = await Bid.findOne({ jobId }); 
-   const bidId = bid?._id;
+   
 
     const client = await userModel.findById(client_id);
     if (!client) {
@@ -95,7 +156,7 @@ markAsCompleted = async (req, res) => {
     }
     
 
-    const finalPayLink = `http://localhost:3000/Payment/Payment?bidId=${bidId}`;
+    const finalPayLink = `http://localhost:3000/Payment/${bidId}`;
 
     await sendEmail({
       fromEmail: freelancer.email,
@@ -119,26 +180,10 @@ markAsCompleted = async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Failed to notify client' });
   }
-},
-
-
-finalPayment = async (req, res) => {
-  const { freelancerId, amount } = req.body;
-  try {
-    await Wallet.updateOne(
-      { userId: freelancerId },
-      { $inc: { balance: amount },
-      $set: { status: 'released' } }
-    );
-
-    res.status(200).json({ message: 'Remaining 50% released' });
-  } catch (err) {
-    res.status(500).json({ error: 'Could not release payment' });
-  }
 };
 
+
 module.exports = {
-  finalPayment,
   markAsCompleted,
   initialPaymentRelease,
   createPayment

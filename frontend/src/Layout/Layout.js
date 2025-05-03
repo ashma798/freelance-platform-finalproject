@@ -35,7 +35,7 @@ const Layout = ({ children }) => {
     <>
       {renderNavbar()}
       <div className="container mt-4">{children}</div>
-      <ToastContainer position="top-right" autoClose={800} />       
+      <ToastContainer position="top-right" autoClose={1000} />       
       <Footer />
     </>
   );

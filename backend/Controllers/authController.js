@@ -35,6 +35,7 @@ userRegistration = async (req, res) => {
                         balance: 0,
                         pending: 0,
                         amount : 0,
+                        status : 'pending',
                         transactions: []
                     });
 

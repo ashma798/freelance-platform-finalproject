@@ -14,6 +14,7 @@ const Freelancerdashboard = () => {
   const [loadingStatus, setLoadingStatus] = useState(false);
   const [status, setStatus] = useState("Pending");
   const [jobs, setJobs] = useState([]);
+  const [submittedBids, setSubmittedBids] = useState([]);
   const navigate = useNavigate();
 
   const loggeduser = JSON.parse(localStorage.getItem("@user"));
@@ -60,9 +61,19 @@ const Freelancerdashboard = () => {
     navigate(`/messages/${messageId}`);
   };
 
+  const fetchSubmittedBids = async () => {
+    try {
+      const res = await axiosInstance.get(`/users/freelancerBids/${freelancerId}`);
+      setSubmittedBids(res.data.map(bid => bid.job_id));
+    } catch (err) {
+      console.error("Error fetching submitted bids", err);
+    }
+  };
+
   useEffect(() => {
     FetchJobList();
     FetchClientList();
+    fetchSubmittedBids();
     FetchMessages();
 
   }, []);
@@ -83,7 +94,7 @@ const Freelancerdashboard = () => {
     navigate(`/Client/clientProfile?clientId=${clientId}`);
   };
   const handleStatusChange = async (jobId) => {
-    setLoadingStatus(true); 
+    setLoadingStatus(true);
     try {
       const response = await axiosInstance.post(`/users/markAsCompleted/${jobId}/${freelancerId}`);
       if (response.data.success) {
@@ -93,17 +104,17 @@ const Freelancerdashboard = () => {
           )
         );
         toast.success("Job marked as completed and client notified.");
-        
+
       }
     } catch (error) {
-      console.log("error msg:",error);
-            toast.error("Error updating job status");
+      console.log("error msg:", error);
+      toast.error("Error updating job status");
     } finally {
-      setLoadingStatus(false); 
+      setLoadingStatus(false);
     }
   };
 
-  
+
   return (
     <div className="container mt-5" style={{ maxWidth: "1200px", backgroundColor: "#f9f9f9" }}>
       <div className="row">
@@ -172,7 +183,14 @@ const Freelancerdashboard = () => {
 
           {/* Job Listings */}
           <h4 className="mb-3 text-muted">Available Projects</h4>
-          {filteredJobs.length === 0 ? (
+          {isLoading ? (
+  <div className="text-center my-4">
+    <div className="spinner-border text-primary" role="status">
+      <span className="visually-hidden">Loading...</span>
+    </div>
+    <p className="mt-2">Loading projects...</p>
+  </div>
+) :filteredJobs.length === 0 ? (
             <div className="col-12 text-center">
               <p>No projects match your search.</p>
             </div>
@@ -200,19 +218,23 @@ const Freelancerdashboard = () => {
                     <div className="flex space-x-2">
                       <button
                         className="btn btn-success bg-green-600 text-white py-2 px-4 btn-sm"
-                        onClick={() => handleStatusChange(job._id,freelancerId)}
+                        onClick={() => handleStatusChange(job._id, freelancerId)}
 
                         style={{ borderRadius: "20px" }}
                       >
                         {job.status === "completed" ? "Completed" : "Pending"}
                       </button>
                       <button
-                        className="btn btn-outline-primary btn-sm"
+                        className={`btn btn-outline-primary btn-sm ${submittedBids.includes(job._id) ? 'bg-gray-400 text-white border-0' : ''
+                          }`}
                         onClick={() => handleBidClick(job._id, freelancerId, job.client_id)}
-                        style={{ borderRadius: "20px" }}
+                        disabled={submittedBids.includes(job._id)}
+                        style={{ borderRadius: '20px' }}
                       >
-                        Free to Bid
+                        {submittedBids.includes(job._id) ? 'Bid Submitted' : 'Free to Bid'}
                       </button>
+
+
                     </div>
                   </div>
                 </div>

@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation,useNavigate } from 'react-router-dom';
 import axiosInstance from '../axiosConfig/axiosConfig';
 import { toast } from 'react-toastify';
 
@@ -13,8 +13,10 @@ const Bid = () => {
   const [clientData, setClientData] = useState(null);
 
   const [error, setError] = useState('');
+  
 
   const location = useLocation();
+    const navigate = useNavigate();
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -75,7 +77,10 @@ const Bid = () => {
         bid_amount: bidAmount
       });
       toast.success('Bid submitted successfully!');
+      navigate('/Freelancer/Freelancerdashboard');
       setLoading(false);
+     
+
     } catch (err) {
       toast.error('Error submitting bid. Please try again.');
       setLoading(false);

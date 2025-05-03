@@ -38,7 +38,7 @@ console.log("reviewData:",reviewData);
       navigate('Client/clientdashboard'); 
     } catch (err) {
       console.error("Error submitting review:", err);
-      alert("Something went wrong");
+     // alert("Something went wrong");
     }
   };
 

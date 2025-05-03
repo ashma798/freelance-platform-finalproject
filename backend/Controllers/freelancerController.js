@@ -21,15 +21,15 @@ bid = async (req, res) => {
 
 
             });
-            await  newBid.save()
+            await newBid.save()
             await newBid.populate('client_id', 'name email');
 
             const client = newBid.client_id;
             const bidId = newBid._id;
             const freelancer = await userModel.findById(newBid.freelancer_id);
-           const freelancerName = freelancer.name;
+            const freelancerName = freelancer.name;
             const freelancerEmail = freelancer.email;
- 
+
             const acceptBidLink = `http://localhost:3000/Client/AcceptBid?jobId=${job_id}&freelancerId=${client_id}&clientId=${freelancer._id}&bidId=${bidId}`;
             await sendEmail({
 
@@ -59,9 +59,9 @@ bid = async (req, res) => {
                 success: false,
                 message: 'Missing required fields',
             });
-        } 
-    }catch (err) {
-        console.log("eror:",err);
+        }
+    } catch (err) {
+        console.log("eror:", err);
         res.status(500).json({
             success: false,
             statusCode: 500,
@@ -124,309 +124,346 @@ bid = async (req, res) => {
             });
         }
     },
-        freelancerProfile = async (req, res) => {
-            try {
-                const { freelancerId } = req.params;
-                const user = await userModel.findById(freelancerId).select('-password');
-               
-                if (!user || user.role !== 'freelancer') {
-                    return res.status(404).json({ message: 'Freelancer not found' });
-                }
-                const freelancerProfile = await freelancerProfileModel.findOne({ user_id: user._id });
-                if (!freelancerProfile) {
-                    return res.status(404).json({ message: 'Freelancer profile not found' });
-                }
-                const freelancerData = {
-                    id: user._id,
-                    name: user.name,
-                    email: user.email,
-                    phone: user.phone,
-                    email: user.email,
-                    country: user.country,
-                    image: user.image,
-                    skills: freelancerProfile.skills,
-                    hourly_rate: freelancerProfile.hourly_rate,
-                    portfolio: freelancerProfile.portfolio_links,
-                    bio:freelancerProfile.bio                               };
-             
-                return res.status(200).json({
-                    success: true,
-                    data: freelancerData
-                });
+    freelancerProfile = async (req, res) => {
+        try {
+            const { freelancerId } = req.params;
+            const user = await userModel.findById(freelancerId).select('-password');
 
-            } catch (error) {
-                console.error('Error fetching freelancer profile:', error);
-                return res.status(500).json({
+            if (!user || user.role !== 'freelancer') {
+                return res.status(404).json({ message: 'Freelancer not found' });
+            }
+            const freelancerProfile = await freelancerProfileModel.findOne({ user_id: user._id });
+            if (!freelancerProfile) {
+                return res.status(404).json({ message: 'Freelancer profile not found' });
+            }
+            const freelancerData = {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                email: user.email,
+                country: user.country,
+                image: user.image,
+                skills: freelancerProfile.skills,
+                hourly_rate: freelancerProfile.hourly_rate,
+                portfolio: freelancerProfile.portfolio_links,
+                bio: freelancerProfile.bio
+            };
+
+            return res.status(200).json({
+                success: true,
+                data: freelancerData
+            });
+
+        } catch (error) {
+            console.log('Error fetching freelancer profile:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Internal Server Error'
+            });
+        }
+    },
+
+    updateFreelancerProfile = async (req, res) => {
+        try {
+            const { freelancerId, updatedData } = req.body;
+
+            const updatedProfile = await freelancerProfileModel.findByIdAndUpdate(
+                freelancerId,
+                updatedData,
+                { new: true }
+            );
+
+            if (!updatedProfile) {
+                return res.status(404).json({
                     success: false,
-                    message: 'Internal Server Error'
+                    statusCode: 404,
+                    message: "Profile not found"
                 });
             }
-        },
 
-        updateFreelancerProfile = async (req, res) => {
-            try {
-                const { freelancerId, updatedData } = req.body;
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: "Profile updated successfully",
+                data: updatedProfile
+            });
+        } catch (e) {
+            res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: "Internal Server Error"
+            });
+        }
+    },
+    getFreelancers = async (req, res) => {
 
-                const updatedProfile = await freelancerProfileModel.findByIdAndUpdate(
-                    freelancerId,
-                    updatedData,
-                    { new: true }
-                );
-
-                if (!updatedProfile) {
-                    return res.status(404).json({
-                        success: false,
-                        statusCode: 404,
-                        message: "Profile not found"
-                    });
-                }
-
-                return res.status(200).json({
-                    success: true,
-                    statusCode: 200,
-                    message: "Profile updated successfully",
-                    data: updatedProfile
-                });
-            } catch (e) {
-                res.status(500).json({
-                    success: false,
-                    statusCode: 500,
-                    message: "Internal Server Error"
-                });
-            }
-        },
-        getFreelancers = async (req, res) => {
-
-            try {
-                const freelancers = await userModel.aggregate([
-                    {
-                        $match: { role: "freelancer" }
-                    },
-                    {
-                        $lookup: {
-                            from: "freelancerprofiles",
-                            localField: "_id",
-                            foreignField: "user_id",
-                            as: "profile"
-                        }
-                    },
-                    {
-                        $unwind: "$profile"
-                    },
-                    {
-                        $project: {
-                            name: 1,
-                            username: 1,
-                            email: 1,
-                            country: 1,
-                            phone: 1,
-                            image: 1,
-                            portfolio_links: "$profile.portfolio_links",
-                            skills: "$profile.skills",
-                            experience: "$profile.experience",
-                            hourly_rate: "$profile.hourly_rate"
-                        }
+        try {
+            const freelancers = await userModel.aggregate([
+                {
+                    $match: { role: "freelancer" }
+                },
+                {
+                    $lookup: {
+                        from: "freelancerprofiles",
+                        localField: "_id",
+                        foreignField: "user_id",
+                        as: "profile"
                     }
-                ]);
-
-                res.status(200).json({
-                    success: true,
-                    statusCode: 200,
-                    message: "Freelancer list fetched successfully",
-                    data: freelancers
-                });
-
-            } catch (error) {
-                console.error("Error fetching freelancers:", error);
-                res.status(500).json({
-                    success: false,
-                    statusCode: 500,
-                    message: "Failed to fetch freelancers",
-                    error: error.message
-                });
-            }
-        },
-
-        addProposal = async (req, res) => {
-            try {
-                const { freelancer_id, job_id, cover_letter, proposed_budget, status } = req.body;
-
-                if (freelancer_id && job_id && proposed_budget) {
-
-                    const newProposal = new proposalModel({
-                        freelancer_id,
-                        job_id,
-                        cover_letter,
-                        proposed_budget,
-                        status
-                    });
-                    newProposal.save()
-                        .then((response) => {
-                            console.log("response: ", response);
-
-                            return res.status(201).json({
-                                success: true,
-                                statusCode: 201,
-                                message: "Proposal added successfully",
-                            });
-                        })
-                        .catch((error) => {
-                            console.log("error: ", error);
-
-                            return res.status(200).json({
-                                success: false,
-                                statusCode: 400,
-                                message: "adding Proposal failed"
-                            });
-                        })
-
-                } else {
-                    return res.status(200).json({
-                        success: false,
-                        statusCode: 400,
-                        message: "Missing required fields"
-                    });
+                },
+                {
+                    $unwind: "$profile"
+                },
+                {
+                    $project: {
+                        name: 1,
+                        username: 1,
+                        email: 1,
+                        country: 1,
+                        phone: 1,
+                        image: 1,
+                        portfolio_links: "$profile.portfolio_links",
+                        skills: "$profile.skills",
+                        experience: "$profile.experience",
+                        hourly_rate: "$profile.hourly_rate"
+                    }
                 }
+            ]);
 
-            } catch (err) {
-                res.status(500).json({
-                    success: false,
-                    statusCode: 500,
-                    message: "Internal Server Error"
+            res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: "Freelancer list fetched successfully",
+                data: freelancers
+            });
+
+        } catch (error) {
+            console.error("Error fetching freelancers:", error);
+            res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: "Failed to fetch freelancers",
+                error: error.message
+            });
+        }
+    },
+
+    addProposal = async (req, res) => {
+        try {
+            const { freelancer_id, job_id, cover_letter, proposed_budget, status } = req.body;
+
+            if (freelancer_id && job_id && proposed_budget) {
+
+                const newProposal = new proposalModel({
+                    freelancer_id,
+                    job_id,
+                    cover_letter,
+                    proposed_budget,
+                    status
                 });
-            }
-        },
-        myProposal = async (req, res) => {
-            try {
-                const freelancerId = req.freelancerId;
+                newProposal.save()
+                    .then((response) => {
+                        console.log("response: ", response);
 
-                const proposals = await proposalModel.find({ freelancer_id: freelancerId })
-                    .populate('job_id')
-                    .populate('freelancer_id');
+                        return res.status(201).json({
+                            success: true,
+                            statusCode: 201,
+                            message: "Proposal added successfully",
+                        });
+                    })
+                    .catch((error) => {
+                        console.log("error: ", error);
 
-                if (!proposals.length) {
-                    return res.status(404).json({
-                        success: false,
-                        statusCode: 404,
-                        message: "No proposals found for this freelancer"
-                    });
-                }
+                        return res.status(200).json({
+                            success: false,
+                            statusCode: 400,
+                            message: "adding Proposal failed"
+                        });
+                    })
 
+            } else {
                 return res.status(200).json({
-                    success: true,
-                    statusCode: 200,
-                    message: "Proposals retrieved successfully",
-                    data: proposals
-                });
-
-            } catch (error) {
-                return res.status(500).json({
                     success: false,
-                    statusCode: 500,
-                    message: "Internal Server Error"
+                    statusCode: 400,
+                    message: "Missing required fields"
                 });
             }
-        },
-        viewProposals = async (req, res) => {
-            try {
-                const allProposals = await proposalModel.find();
 
-                return res.status(200).json({
-                    success: true,
-                        statusCode: 200,
-                    message: "Proposals retrieved successfully",
-                    count: allProposals.length,
-                    data: allProposals
-                });
-            } catch (err) {
-                return res.status(500).json({
+        } catch (err) {
+            res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: "Internal Server Error"
+            });
+        }
+    },
+    myProposal = async (req, res) => {
+        try {
+            const freelancerId = req.freelancerId;
+
+            const proposals = await proposalModel.find({ freelancer_id: freelancerId })
+                .populate('job_id')
+                .populate('freelancer_id');
+
+            if (!proposals.length) {
+                return res.status(404).json({
                     success: false,
-                    statusCode: 500,
-                    message: "Failed to fetch proposals"
-                })
-            }
-        },
-        deleteJob = async (req, res) => {
-            try {
-                const { jobId } = req.body;
-                console.log("Api call:", jobId);
-
-                if (!jobId) {
-                    return res.status(400).json({
-                        success: false,
-                        statusCode: 400,
-                        message: "Job ID is required",
-                    });
-                }
-
-                const deletedJob = await jobModel.findByIdAndDelete(jobId);
-                console.log("jb:", deletedJob);
-
-                if (!deletedJob) {
-                    return res.status(404).json({
-                        success: false,
-                        statusCode: 404,
-                        message: "Job not found",
-                    });
-                }
-
-                return res.status(200).json({
-                    success: true,
-                    statusCode: 200,
-                    message: "Job deleted successfully",
-                    data: deletedJob
-                });
-
-            } catch (e) {
-                return res.status(500).json({
-                    success: false,
-                    statusCode: 500,
-                    message: `Internal Server Error: ${e.message}`
+                    statusCode: 404,
+                    message: "No proposals found for this freelancer"
                 });
             }
-        },
-        updateJob = async (req, res) => {
-            try {
-                const { jobId, updatedData } = req.body;
 
-                const updatedJob = await jobModel.findByIdAndUpdate(
-                    jobId,
-                    updatedData,
-                    { new: true }
-                );
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: "Proposals retrieved successfully",
+                data: proposals
+            });
 
-                if (!jobId) {
-                    return res.status(404).json({
-                        success: false,
-                        statusCode: 404,
-                        message: "job not found"
-                    });
-                }
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: "Internal Server Error"
+            });
+        }
+    },
+    viewProposals = async (req, res) => {
+        try {
+            const allProposals = await proposalModel.find();
 
-                return res.status(200).json({
-                    success: true,
-                    statusCode: 200,
-                    message: "job updated successfully",
-                    data: updatedJob
-                });
-            } catch (e) {
-                console.error("Update error:", e);
-                res.status(500).json({
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: "Proposals retrieved successfully",
+                count: allProposals.length,
+                data: allProposals
+            });
+        } catch (err) {
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: "Failed to fetch proposals"
+            })
+        }
+    },
+    deleteJob = async (req, res) => {
+        try {
+            const { jobId } = req.body;
+            console.log("Api call:", jobId);
+
+            if (!jobId) {
+                return res.status(400).json({
                     success: false,
-                    statusCode: 500,
-                    message: "Internal Server Error"
+                    statusCode: 400,
+                    message: "Job ID is required",
                 });
             }
-        };
-      
-    module.exports = {
-        freelancerProfile,
-        inviteFreelancer,
-        bid,
-        updateFreelancerProfile,
-        addProposal,
-        myProposal,
-        viewProposals
-      
 
+            const deletedJob = await jobModel.findByIdAndDelete(jobId);
+            console.log("jb:", deletedJob);
+
+            if (!deletedJob) {
+                return res.status(404).json({
+                    success: false,
+                    statusCode: 404,
+                    message: "Job not found",
+                });
+            }
+
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: "Job deleted successfully",
+                data: deletedJob
+            });
+
+        } catch (e) {
+            return res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: `Internal Server Error: ${e.message}`
+            });
+        }
+    },
+    updateJob = async (req, res) => {
+        try {
+            const { jobId, updatedData } = req.body;
+
+            const updatedJob = await jobModel.findByIdAndUpdate(
+                jobId,
+                updatedData,
+                { new: true }
+            );
+
+            if (!jobId) {
+                return res.status(404).json({
+                    success: false,
+                    statusCode: 404,
+                    message: "job not found"
+                });
+            }
+
+            return res.status(200).json({
+                success: true,
+                statusCode: 200,
+                message: "job updated successfully",
+                data: updatedJob
+            });
+        } catch (e) {
+            console.error("Update error:", e);
+            res.status(500).json({
+                success: false,
+                statusCode: 500,
+                message: "Internal Server Error"
+            });
+        }
+    },
+    checkBid = async (req, res) => {
+        const { freelancerId, jobId } = req.params;
+        try {
+            const existingBid = await Bid.findOne({ freelancer_id: freelancerId, job_id: jobId });
+            res.json({ hasBid: !!existingBid });
+        } catch (err) {
+            res.status(500).json({ message: "Error checking bid" });
+        }
+    },
+    freelancerBids = async (req, res) => {
+        const { freelancerId } = req.params;
+        try {
+            const bids = await Bid.find({ freelancer_id: freelancerId });
+            res.json(bids);
+        } catch (err) {
+            res.status(500).json({ message: "Error fetching bids" });
+        }
+    },
+    myBids = async (req, res) => {
+        const { freelancerId } = req.params;
+        try {
+
+            const bids = await bidModel
+                .find({ freelancer_id: freelancerId })
+                .populate('job_id', 'title description client_id')
+                .populate('client_id', 'name email');
+            res.json(bids);
+        } catch (err) {
+            res.status(500).json({ message: "Error fetching bids" });
+        }
     };
+
+
+
+module.exports = {
+    freelancerProfile,
+    inviteFreelancer,
+    bid,
+    updateFreelancerProfile,
+    addProposal,
+    myProposal,
+    viewProposals,
+    checkBid,
+    freelancerBids,
+    myBids
+
+
+};

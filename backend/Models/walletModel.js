@@ -1,12 +1,17 @@
 const mongoose = require('mongoose');
 
 const walletSchema = new mongoose.Schema({
-user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true },
+  user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true },
   balance: { type: Number, default: 0 },
-  status: { type: String, default: 'pending',
-default:'hold'
-   },
-  
+  transactions: [
+    {
+      job_id: { type: mongoose.Schema.Types.ObjectId, ref: 'jobs' },
+      amount: Number,
+      type: { type: String, enum: ['credit', 'debit','hold'] },
+      status: { type: String, enum: ['pending', 'released', 'paid','hold'] },
+      date: { type: Date, default: Date.now }
+    }
+  ]
 });
 
 module.exports = mongoose.model('Wallet', walletSchema);

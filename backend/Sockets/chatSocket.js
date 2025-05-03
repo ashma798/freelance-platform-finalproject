@@ -1,35 +1,29 @@
-const Message = require("../Models/messageModel");
+// Sockets/chatSocket.js
+const users = new Map();
 
 const chatSocket = (io, socket) => {
-  console.log("User connected:", socket.id);
+  console.log("Socket connected:", socket.id);
 
-  // When a user sends a message
-  socket.on("sendMessage", async (data) => {
-    try {
-      const { senderId, receiverId, message } = data;
+  socket.on("join", (userId) => {
+    users.set(userId, socket.id);
+    console.log(`User ${userId} joined with socket ID ${socket.id}`);
+  });
 
-      // Save the message to the database
-      const newMessage = new Message({
-        senderId,
-        receiverId,
-        message,
-        timestamp: new Date(),
-      });
-      await newMessage.save();
-
-      // Emit the message to the specific receiver (freelancer)
-      io.to(receiverId).emit("receiveMessage", newMessage);  // Send to the receiver
-
-      // Optionally, send the message to the sender as well
-      io.to(senderId).emit("receiveMessage", newMessage);  // Send to the sender (client)
-      
-    } catch (error) {
-      console.error("Error saving message:", error);
+  socket.on("sendMessage", (data) => {
+    const receiverSocketId = users.get(data.receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("receiveMessage", data);
     }
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
+    for (let [userId, socketId] of users.entries()) {
+      if (socketId === socket.id) {
+        users.delete(userId);
+        break;
+      }
+    }
+    console.log("Socket disconnected:", socket.id);
   });
 };
 

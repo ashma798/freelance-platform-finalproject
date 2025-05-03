@@ -11,11 +11,14 @@ const FreelancerNavbar = () => {
   const [userName, setUserName] = useState('');
   const [freelancerId, setFreelancerId] = useState('');
 
+
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('@user'));
     if (userData) {
       setUserName(userData.name);
       setImageUrl(userData.image || 'https://via.placeholder.com/40');
+      
+        setFreelancerId(userData._id);
     }
 
     // Close dropdown on outside click
@@ -54,9 +57,8 @@ const FreelancerNavbar = () => {
         <ul className={`lg:flex lg:items-center lg:space-x-6 ${mobileMenuOpen ? 'block mt-4' : 'hidden'} lg:block`}>
           <li><Link to="/Freelancer/freelancerdashboard" className="block py-2 hover:text-gray-300">Dashboard</Link></li>
           <li><Link to="/Jobs/Jobs" className="block py-2 hover:text-gray-300">Browse Jobs</Link></li>
-          <li><Link to="/Freelancer/getMessages" className="block py-2 hover:text-gray-300">Inbox</Link></li>
-          <li><Link to="/Freelancer/getBidDetails" className="block py-2 hover:text-gray-300">My Bids</Link></li>
-          <li><Link to="/Freelancer/joblist" className="block py-2 hover:text-gray-300">My Work</Link></li>
+          <li><Link to="/Freelancer/BidList" className="block py-2 hover:text-gray-300">My Bids</Link></li>
+         
           
         </ul>
 
@@ -77,7 +79,7 @@ const FreelancerNavbar = () => {
             <ul className="absolute right-0 mt-2 w-44 bg-white text-black rounded shadow-md z-50">
               <li>
                   
-                <Link to={`/Freelancer/freelancerProfile/${freelancerId}`}   className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
+                <Link to={`/Freelancer/freelancerProfile?freelancerId=${freelancerId}`}   className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
               </li>
               <li>
                 <Link to="#" className="block px-4 py-2 hover:bg-gray-100">Wallet</Link>
