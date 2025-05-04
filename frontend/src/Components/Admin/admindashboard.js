@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axiosInstance from '../axiosConfig/axiosConfig';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-
+import {Link } from 'react-router-dom';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const AdminDashboard = () => {
@@ -83,20 +83,12 @@ const AdminDashboard = () => {
       console.log(selectedJob);  
     }
   };
+  
 
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg p-6">
-        <h2 className="text-2xl font-bold mb-8">Reports</h2>
-        <ul className="space-y-4">
-          <li><a href="Admin/clientReport" className="text-blue-600 hover:underline">Users</a></li>
-          <li><a href="Admin/freelancerReport" className="text-blue-600 hover:underline">Freelancers</a></li>
-          <li><a href="Admin/jobReport" className="text-blue-600 hover:underline">Job </a></li>
-          <li><a href="#" className="text-blue-600 hover:underline">Payments</a></li>
-        </ul>
-      </aside>
-
+     
       {/* Main Content */}
       <main className="flex-1 p-8">
         <h2 className="text-3xl font-bold mb-6">Admin Dashboard</h2>
@@ -146,6 +138,7 @@ const AdminDashboard = () => {
                 <tr className="bg-gray-200">
                   <th className="py-2 px-4 text-left">Name</th>
                   <th className="py-2 px-4 text-left">Email</th>
+                  <th className="py-2 px-4 text-left">Role</th>
                   <th className="py-2 px-4 text-left">Status</th>
                   <th className="py-2 px-4 text-left">Actions</th>
                 </tr>
@@ -155,6 +148,7 @@ const AdminDashboard = () => {
                   <tr key={index} className="border-t">
                     <td className="py-2 px-4">{user.name}</td>
                     <td className="py-2 px-4">{user.email}</td>
+                    <td className="py-2 px-4">{user.role}</td>
                     <td className="py-2 px-4">{user.isActive ? 'Active' : 'Inactive'}</td>
                     <td className="py-2 px-4 flex space-x-4">
                       <button
@@ -193,22 +187,21 @@ const AdminDashboard = () => {
               <thead>
                 <tr className="bg-gray-200">
                   <th className="py-2 px-4 text-left">Job Title</th>
+                  <th className="py-2 px-4 text-left">Deadline</th>
                   <th className="py-2 px-4 text-left">Status</th>
-                  <th className="py-2 px-4 text-left">Actions</th>
+                  <th className="py-2 px-4 text-left">Active/Inactive</th>
+                  <th className="py-2 px-4 text-left flex space-x-4">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {jobList.map((job, index) => (
                   <tr key={index} className="border-t">
-                    <td className="py-2 px-4">{job.title}</td>
+                    <td className="py-2 px-4">{job.job_title}</td>
+                    {job.deadline ? new Date(job.deadline).toLocaleDateString('en-GB') : ''}
+                    <td className="py-2 px-4">{job.status}</td>
                     <td className="py-2 px-4">{job.isActive ? 'Active' : 'Inactive'}</td>
                     <td className="py-2 px-4 flex space-x-4">
-                      <button
-                        onClick={() => handleView(job._id, 'job')}
-                        className="text-blue-600 hover:underline"
-                      >
-                        View
-                      </button>
+                      
                       <button
                         onClick={() => handleDelete(job._id, 'job')}
                         className="text-red-600 hover:underline"

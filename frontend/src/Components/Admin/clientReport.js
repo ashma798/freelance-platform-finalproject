@@ -6,14 +6,13 @@ const ClientListPage = () => {
   const [filteredClients, setFilteredClients] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-
   const fetchClients = async () => {
     try {
-      const response = await axiosInstance.get('/users/userReport');  
+      const response = await axiosInstance.get('/users/clientReport');
       setClients(response.data);
       setFilteredClients(response.data);
     } catch (error) {
-      console.log("Error fetching clients:", error);
+      console.error("Error fetching clients:", error);
     }
   };
 
@@ -21,81 +20,71 @@ const ClientListPage = () => {
     fetchClients();
   }, []);
 
-  const handleFilter = () => {
-    let filtered = clients;
-
-    
-    if (searchTerm) {
-      filtered = filtered.filter(client => 
-        client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.email.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    
-
-    setFilteredClients(filtered);
-  };
-
-  
   useEffect(() => {
-    handleFilter();
-  }, [searchTerm]);
+    const filtered = clients.filter(client =>
+      client.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredClients(filtered);
+  }, [searchTerm, clients]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h2 className="text-3xl font-bold mb-6">Client List</h2>
+      <h2 className="text-3xl font-bold mb-6 text-center">Client List</h2>
 
-      {/* Filter Section */}
+      {/* Search Input */}
       <div className="bg-white p-6 rounded-lg shadow mb-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <input
-              type="text"
-              className="px-4 py-2 border rounded-lg w-full md:w-1/3"
-              placeholder="Search by name or email"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          
-          </div>
+          <input
+            type="text"
+            className="px-4 py-2 border rounded-lg w-full md:w-1/2"
+            placeholder="Search by name or email"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
       </div>
 
-      {/* Client List Table */}
-      <div className="bg-white p-6 rounded-lg shadow">
+      {/* Client Table */}
+      <div className="bg-white p-6 rounded-lg shadow overflow-x-auto">
         <table className="min-w-full table-auto">
           <thead>
-          <tr className="bg-gray-200">
-              <th className="py-2 px-4 text-left">Name</th>
-              <th className="py-2 px-4 text-left">Email</th>
-              <th className="py-2 px-4 text-left">Role</th>
-              <th className="py-2 px-4 text-left">Contact No</th>
-              <th className="py-2 px-4 text-left">Country</th>
-              <th className="py-2 px-4 text-left">Active/Inactive</th>
+            <tr className="bg-gray-200 text-left">
+              <th className="py-2 px-4">Name</th>
+              <th className="py-2 px-4">Email</th>
+              <th className="py-2 px-4">Role</th>
+              <th className="py-2 px-4">Contact No</th>
+              <th className="py-2 px-4">Country</th>
+              <th className="py-2 px-4">Status</th>
             </tr>
           </thead>
           <tbody>
-            {filteredClients.map((client, index) => (
-              <tr key={index} className="border-t">
-              <td className="py-2 px-4">{client.name}</td>
-              <td className="py-2 px-4">{client.email}</td>
-              <td className="py-2 px-4">{client.role}</td>
-              <td className="py-2 px-4">{client.phone}</td>
-              <td className="py-2 px-4">{client.country}</td>
-              <td className="py-2 px-4">
-                <span
-                  className={`px-3 py-1 rounded-full ${
-                    client.isActive ? "bg-green-500 text-white" : "bg-red-500 text-white"
-                  }`}
-                >
-                  {client.isActive ? "Active" : "Inactive"}
-                </span>
-              </td>
-             
-              
-            </tr>
-            ))}
+            {filteredClients.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="py-4 text-center text-gray-500">
+                  No clients found.
+                </td>
+              </tr>
+            ) : (
+              filteredClients.map((client, index) => (
+                <tr key={index} className="border-t hover:bg-gray-50">
+                  <td className="py-2 px-4">{client.name}</td>
+                  <td className="py-2 px-4">{client.email}</td>
+                  <td className="py-2 px-4 capitalize">{client.role}</td>
+                  <td className="py-2 px-4">{client.phone || "N/A"}</td>
+                  <td className="py-2 px-4">{client.country || "N/A"}</td>
+                  <td className="py-2 px-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-white text-sm ${
+                        client.isActive ? "bg-green-500" : "bg-red-500"
+                      }`}
+                    >
+                      {client.isActive ? "Active" : "Inactive"}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

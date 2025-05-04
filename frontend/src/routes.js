@@ -23,6 +23,7 @@ import AddReview from "./Components/Client/AddReview";
 import ClientReport from "./Components/Admin/clientReport";
 import FreelancerReport from "./Components/Admin/freelancerReport";
 import JobReport from "./Components/Admin/jobReport";
+import BidList from "./Components/Freelancer/BidList";
 
 
 const stripePromise = loadStripe("pk_test_51RD96gR3dnpCBBb9NWyHF9GbJzo3RXxzuDEsv0KS0PTpUWuo6oQc5b2iBqcrGLNC5ZV50wIA6pKHUyAEoq0zfbt300gCcdhIzN");
@@ -74,8 +75,9 @@ const routes = createBrowserRouter([
     {   path:"/Jobs/AddJob",element: <ProtectedRoute element={<Layout><AddJob/></Layout>}/>,},
     {  path: "/Freelancer/Bid", element : <ProtectedRoute element={<Layout><Bid/></Layout> } />,},
     {  path: "/Freelancer/Proposal", element : <ProtectedRoute element={<Layout><Proposal/></Layout> } />,},
+    {  path: "/Freelancer/BidList", element : <ProtectedRoute element={<Layout><BidList/></Layout> } />,},
     {  path: "/Freelancer/MyProposal", element : <ProtectedRoute element={<Layout><MyProposal/></Layout> } />,},
-    {  path: "/Chat/Chat", element: <ProtectedRoute element={<Layout><Chat /></Layout>} />,},
+    {  path: "/Chat/Chat/:freelancerId", element: <ProtectedRoute element={<Layout><Chat /></Layout>} />,},
     { path: "*", element : <Navigate to="/authentication/login" />}, 
     //{ path: "/Logout", element: <Logout/> }
   ]);
