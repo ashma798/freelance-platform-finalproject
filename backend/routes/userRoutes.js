@@ -7,8 +7,7 @@ const {
 const {getFreelancerCount,getJobCount,getOpenProjectCount} = require('../Controllers/dashboardController')
 const { myProposal,viewProposals,addProposal,freelancerProfile,inviteFreelancer,bid,checkBid,freelancerBids,myBids} = require("../Controllers/freelancerController");
 const { createPayment,initialPaymentRelease,markAsCompleted} = require("../Controllers/paymentController");
-const { create } = require("../Models/jobModel");
-const Freelancer = require("../Models/freelancerProfileModel");
+
 
 /*ADMIN ROUTES*/
 
@@ -18,7 +17,6 @@ router.delete('/deleteJob',verifyToken,checkRole(['admin', 'client']),deleteJob)
 router.get('/jobReport',verifyToken,checkRole(['admin']),jobReport);
 router.get('/clientReport',verifyToken,checkRole(['admin']),clientReport);
 router.get('/freelancerReport',verifyToken,checkRole(['admin']),freelancerReport);
-//router.get('/jobReport',verifyToken,checkRole(['admin']),jobReport);
 router.get('/paymentReport',verifyToken,checkRole(['admin']),paymentReport);
 
 
@@ -37,8 +35,6 @@ router.get('/myProposal',verifyToken,checkRole(['client']),myProposal);
 router.get('/clientProfile/:clientId',verifyToken,checkRole(['client','freelancer']),clientProfile);
 router.get('/acceptBid',verifyToken,checkRole(['client']),acceptBid);
 router.get('/getBidDetails/:bidId',verifyToken,checkRole(['client','freelancer']),getBidDetails);
-router.post('/createPayment',verifyToken,checkRole(['client']),createPayment);
-router.post('/initialPaymentRelease',verifyToken,checkRole(['client','freelancer']),initialPaymentRelease);
 router.get('/getUsers/:receiverId', verifyToken, checkRole(['client','freelancer']), getUsers);
 
 /*FREELANCER ROUTES*/
@@ -57,7 +53,8 @@ router.get('/freelancerBids/:freelancerId', verifyToken, checkRole(['freelancer'
 router.get('/myBids/:freelancerId', verifyToken, checkRole(['freelancer']), myBids);
 
 /*PAYMENT ROUTES*/
-
+router.post('/createPayment',verifyToken,checkRole(['client']),createPayment);
+router.post('/initialPaymentRelease',verifyToken,checkRole(['client','freelancer']),initialPaymentRelease);
 
 
 

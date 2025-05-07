@@ -4,11 +4,9 @@ exports.verifyToken = (req,res,next)=>{
     try{
         const token = req.header('Authorization').replace('Bearer', '').trim();
         const decryptedToken = jwt.verify(token,process.env.JWT_SECRET);
-        console.log("decryptedToken:",decryptedToken);
         if(decryptedToken && decryptedToken.userId){
             req.userId = decryptedToken.userId;
             req.role = decryptedToken.role;
-            console.log("role:",req.role);
             next();
 
         }else{
@@ -29,7 +27,6 @@ exports.verifyToken = (req,res,next)=>{
 }
 exports.checkRole = (allowedRoles) => {
     return (req, res, next) => {
-        console.log("User Role:", req.role); 
       if (!Array.isArray(allowedRoles)) {
         allowedRoles = [allowedRoles]; 
       }
@@ -45,12 +42,5 @@ exports.checkRole = (allowedRoles) => {
       next();
     };
   };
-/*exports.checkRole = (role) => {
-    return (req, res, next) => {
-      if (req.role !== role) {
-        return res.status(403).json({ message: `Access restricted to ${role}s` });
-      }
-      next();
-    };
-  };*/
+
   

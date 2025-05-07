@@ -24,9 +24,6 @@ const clientSchema = new  mongoose.Schema({
          required : false
        
     }
-
-  
-    
 },
 {
     timeStamps:true
