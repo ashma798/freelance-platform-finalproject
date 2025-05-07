@@ -3,7 +3,7 @@ const router = express.Router();
 const { verifyToken, checkRole } = require("../Middlewares/auth");
 const {deleteJob,deleteUser,jobReport,clientReport,freelancerReport,paymentReport,users} = require("../Controllers/adminController");
 const {
-    addReview,viewClient,sendMessage,getUsers,viewJob,jobProfile,clientProfile,getBidDetails} = require("../Controllers/userController");
+    addReview,viewClient,sendMessage,getUsers,viewJob,jobProfile,clientProfile,getBidDetails,myProposals} = require("../Controllers/userController");
 const {getFreelancerCount,getJobCount,getOpenProjectCount} = require('../Controllers/dashboardController')
 const { myProposal,viewProposals,addProposal,freelancerProfile,inviteFreelancer,bid,checkBid,freelancerBids,myBids} = require("../Controllers/freelancerController");
 const { createPayment,initialPaymentRelease,markAsCompleted} = require("../Controllers/paymentController");
@@ -31,7 +31,7 @@ router.get('/getFreelancerCount', verifyToken,checkRole('client'), getFreelancer
 router.get('/getJobCount', verifyToken,checkRole('client'), getJobCount);
 router.get('/getOpenProjectCount', verifyToken,checkRole('client'), getOpenProjectCount);
 router.get('/getProposalCount',verifyToken,checkRole('client'),getProposalCount);
-router.get('/myProposal',verifyToken,checkRole(['client']),myProposal);
+router.get('/myProposals/:clientId',verifyToken,checkRole(['client']),myProposals);
 router.get('/clientProfile/:clientId',verifyToken,checkRole(['client','freelancer']),clientProfile);
 router.get('/acceptBid',verifyToken,checkRole(['client']),acceptBid);
 router.get('/getBidDetails/:bidId',verifyToken,checkRole(['client','freelancer']),getBidDetails);

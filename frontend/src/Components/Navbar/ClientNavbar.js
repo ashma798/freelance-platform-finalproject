@@ -44,7 +44,7 @@ const ClientNavbar = () => {
         <div className="hidden md:flex items-center space-x-6">
           <Link to="/client/clientdashboard" className="text-white hover:text-gray-300">Dashboard</Link>
           <Link to="/Jobs/Jobs" className="text-white hover:text-gray-300">Projects</Link>
-          <Link to="/Freelancer/myProposal" className="text-white hover:text-gray-300">Proposals</Link>
+          <Link to={`/Client/ProposalList`} className="text-white hover:text-gray-300">Proposals</Link>
           <Link to="/Jobs/addJob" className="text-white hover:text-gray-300">Post Job</Link>
 
           {/* Profile Dropdown */}

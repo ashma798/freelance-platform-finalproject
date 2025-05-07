@@ -8,7 +8,7 @@ import Bid from "./Components/Freelancer/Bid";
 import Layout from "./Layout/Layout";
 import Jobs from  "./Components/Jobs/Jobs";
 import AddJob from "./Components/Jobs/AddJob";
-import Inbox from "./Components/Freelancer/Inbox";
+import ProposalList from "./Components/Client/ProposalList";
 import Proposal from "./Components/Freelancer/MyProposal";
 import Home from "./Components/Home";
 import Freelancerprofile from "./Components/Freelancer/freelancerProfile";
@@ -70,6 +70,7 @@ const routes = createBrowserRouter([
     {  path: "/Freelancer/freelancerProfile",element: <ProtectedRoute element={<Layout><Freelancerprofile /></Layout>} />, },
     {  path: "/Client/clientProfile",element: <ProtectedRoute element={<Layout><Clientprofile /></Layout>} />, },
     {  path: "/Client/AcceptBid",element: <ProtectedRoute element={<Layout><AcceptBid /></Layout>} />, },
+    {  path: "/Client/ProposalList", element : <ProtectedRoute element={<Layout><ProposalList/></Layout> } />,},
     {  path: "/Payment/:bidId",element: (<ProtectedRoute element={<Elements stripe={stripePromise}><Layout><Payment /></Layout></Elements>}/>), },  
     {  path: "/Jobs/Jobs",element: <ProtectedRoute element={<Layout><Jobs /></Layout>} />, },
     {   path:"/Jobs/AddJob",element: <ProtectedRoute element={<Layout><AddJob/></Layout>}/>,},
@@ -79,7 +80,7 @@ const routes = createBrowserRouter([
     {  path: "/Freelancer/MyProposal", element : <ProtectedRoute element={<Layout><MyProposal/></Layout> } />,},
     {  path: "/Chat/Chat/:receiverId", element: <ProtectedRoute element={<Layout><Chat /></Layout>} />,},
     { path: "*", element : <Navigate to="/authentication/login" />}, 
-    //{ path: "/Logout", element: <Logout/> }
+   
   ]);
 
 export default routes;

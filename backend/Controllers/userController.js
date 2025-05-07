@@ -377,18 +377,29 @@ addJob = async (req, res) => {
     },
     myProposals = async (req, res) => {
         try {
-            const userId = req.userId;
-            const proposals = await Proposal.find({ client_id: userId }).populate('job_id freelancer_id', 'name job_title status');
-
-            res.status(200).json({
-                success: true,
-                data: proposals
-            });
+          const {clientId}  = req.params;
+          const proposals = await bidModel.find({ client_id: clientId })
+            .populate('job_id', 'job_title')
+            .populate('freelancer_id', 'name');
+      
+          const formattedProposals = proposals.map((proposal) => ({
+            _id: proposal._id,
+            title: proposal.job_id.job_title,
+            bidAmount: proposal.bid_amount,
+            status: proposal.status,
+            freelancerName: proposal.freelancer_id.name,
+          }));
+      
+          res.status(200).json({
+            success: true,
+            data: formattedProposals,
+          });
         } catch (err) {
-            console.error('Error fetching proposals:', err);
-            res.status(500).json({ success: false, message: 'Server Error' });
+          console.error('Error fetching proposals:', err);
+          res.status(500).json({ success: false, message: 'Server Error' });
         }
-    },
+      };
+      
 
     acceptBid = async (req, res) => {
         const { bidId, amount } = req.params;

@@ -34,7 +34,7 @@ const bidSchema = new mongoose.Schema({
 
 
 },  {
-        timeStamps: true
+        timestamps: true
     });
 
 
