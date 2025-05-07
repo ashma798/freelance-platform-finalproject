@@ -6,7 +6,7 @@ const walletSchema = new mongoose.Schema({
   transactions: [
     {
       job_id: { type: mongoose.Schema.Types.ObjectId, ref: 'jobs' },
-      amount: Number,
+      amount: {type :Number , default:0 },
       type: { type: String, enum: ['credit', 'debit','hold'] },
       status: { type: String, enum: ['pending', 'released', 'paid','hold'] },
       date: { type: Date, default: Date.now }

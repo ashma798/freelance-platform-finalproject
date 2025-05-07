@@ -9,7 +9,7 @@ const FreelancerListPage = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await axiosInstance.get('/users/userReport');  
+      const response = await axiosInstance.get('/users/freelancerReport');  
       setClients(response.data);
       setFilteredClients(response.data);
     } catch (error) {
@@ -43,15 +43,15 @@ const FreelancerListPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h2 className="text-3xl font-bold mb-6">Client List</h2>
+      <h2 className="text-3xl font-bold mb-6">Freelancers</h2>
 
       {/* Filter Section */}
       <div className="bg-white p-6 rounded-lg shadow mb-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 w-full md:w-1/2">
             <input
-              type="text"
-              className="px-4 py-2 border rounded-lg w-full md:w-1/3"
+              type="text" 
+              className="px-4 py-2 border rounded-lg w-full md:w-1/2"
               placeholder="Search by name or email"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

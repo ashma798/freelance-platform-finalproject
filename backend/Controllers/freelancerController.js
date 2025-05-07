@@ -127,6 +127,7 @@ bid = async (req, res) => {
     freelancerProfile = async (req, res) => {
         try {
             const { freelancerId } = req.params;
+            console.log('freelancerId:',freelancerId);
             const user = await userModel.findById(freelancerId).select('-password');
 
             if (!user || user.role !== 'freelancer') {
@@ -422,7 +423,7 @@ bid = async (req, res) => {
     checkBid = async (req, res) => {
         const { freelancerId, jobId } = req.params;
         try {
-            const existingBid = await Bid.findOne({ freelancer_id: freelancerId, job_id: jobId });
+            const existingBid = await bidModel.findOne({ freelancer_id: freelancerId, job_id: jobId });
             res.json({ hasBid: !!existingBid });
         } catch (err) {
             res.status(500).json({ message: "Error checking bid" });
@@ -431,7 +432,7 @@ bid = async (req, res) => {
     freelancerBids = async (req, res) => {
         const { freelancerId } = req.params;
         try {
-            const bids = await Bid.find({ freelancer_id: freelancerId });
+            const bids = await bidModel.find({ freelancer_id: freelancerId });
             res.json(bids);
         } catch (err) {
             res.status(500).json({ message: "Error fetching bids" });

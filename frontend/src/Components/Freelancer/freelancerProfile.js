@@ -3,6 +3,7 @@ import { useLocation, Link } from 'react-router-dom';
 import axiosInstance from '../axiosConfig/axiosConfig';
 import Chat from '../Chat/Chat';
 import { toast } from 'react-toastify';
+import socket from "../../socket";
 
 const FreelancerProfile = () => {
   const location = useLocation();
@@ -11,6 +12,15 @@ const FreelancerProfile = () => {
   const [freelancerData, setFreelancerData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [openChat, setOpenChat] = useState(false);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("@user"));
+    if (user) {
+      socket.emit("join", user._id);
+    }
+  
+    return () => socket.disconnect();
+  }, []);
 
   useEffect(() => {
     const fetchFreelancerProfile = async () => {
@@ -102,21 +112,24 @@ const FreelancerProfile = () => {
               </div>
             </div>
           </div>
+           {/* Floating Chat Button */}
+           {!openChat && (
+            <button
+              onClick={() => setOpenChat(true)}
+              className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg z-50"
+            >
+              💬 Chat
+            </button>
+          )}
 
-          {/* Floating Chat Button */}
-          <button
-            onClick={() => setOpenChat(true)}
-            className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg z-50"
-          >
-            💬 Chat
-          </button>
-
+          {/* Chat Component */}
           {openChat && (
             <Chat
-              freelancerId={freelancerId}
-              onClose={() => setOpenChat(false)}
+              receiverId={freelancerData.id}  // Pass correct receiverId
+              onClose={() => setOpenChat(false)} // Close chat on button click
             />
           )}
+
         </div>
       </div>
     </div>

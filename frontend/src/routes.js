@@ -77,7 +77,7 @@ const routes = createBrowserRouter([
     {  path: "/Freelancer/Proposal", element : <ProtectedRoute element={<Layout><Proposal/></Layout> } />,},
     {  path: "/Freelancer/BidList", element : <ProtectedRoute element={<Layout><BidList/></Layout> } />,},
     {  path: "/Freelancer/MyProposal", element : <ProtectedRoute element={<Layout><MyProposal/></Layout> } />,},
-    {  path: "/Chat/Chat/:freelancerId", element: <ProtectedRoute element={<Layout><Chat /></Layout>} />,},
+    {  path: "/Chat/Chat/:receiverId", element: <ProtectedRoute element={<Layout><Chat /></Layout>} />,},
     { path: "*", element : <Navigate to="/authentication/login" />}, 
     //{ path: "/Logout", element: <Logout/> }
   ]);

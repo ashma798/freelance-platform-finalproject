@@ -4,16 +4,18 @@ const router = express.Router();
 const stripe = require('../StripeConfig/stripe');
 const Wallet = require('../Models/walletModel');
 const Bid = require('../Models/bidModel');
-const Job = require('../Models/jobModel');
+const jobModel = require('../Models/jobModel');
 const userModel = require('../Models/userModel');
 const sendEmail = require("../Utils/sendEmail");
 const paymentModel = require("../Models/paymentModel");
+const bidModel = require("../Models/bidModel");
+
 
 const createPayment = async (req, res) => {
   try {
-  
+    //console.log(res.body);
     const { clientId, jobId, amount } = req.body;
-
+  
     if (!clientId || !jobId || !amount) {
       return res.status(400).json({ message: "Missing required fields" });
     }
@@ -27,7 +29,7 @@ const createPayment = async (req, res) => {
       client_id: clientId,
       job_id: jobId,
       amount,
-      status: "pending",
+      status: "hold",
       method: "card",
       payment_intent_id: paymentIntent.id,
     });
@@ -81,7 +83,7 @@ initialPaymentRelease = async (req, res) => {
       },
       { upsert: true }
     );
-    await Job.findByIdAndUpdate(jobId, { status: 'partialpaid' });
+    await jobModel.findByIdAndUpdate(jobId, { status: 'partialpaid' });
 
     res.status(200).json({ message: '50% released to freelancer' });
   } catch (err) {
@@ -94,16 +96,19 @@ initialPaymentRelease = async (req, res) => {
 markAsCompleted = async (req, res) => {
   const { jobId,freelancerId } = req.params; 
   try {
-    const updateJob = await Job.findByIdAndUpdate(jobId, { status: 'completed' }, { new: true });
+    const updateJob = await jobModel.findByIdAndUpdate(jobId, { status: 'completed' }, { new: true });
     if (!updateJob) return res.status(404).json({ error: 'Job not found' });
 
     const freelancer_id = freelancerId;
     const client_id = updateJob.client_id;
-    const bid = await Bid.findOneAndUpdate(
-      { job_id: jobId, status: 'paid' }
+   const bid = await bidModel.findOneAndUpdate(
+      { job_id: jobId, status: 'pending' },
+      { status: 'completed' },
+      { new: true }
     );
+    console.log("biddata:",bid);
     const bidId = bid?._id;
-   const amount = bid.bid_amount / 2;
+   const amount = bid?.bid_amount / 2;
 
    
    await Wallet.updateOne(
@@ -177,7 +182,7 @@ markAsCompleted = async (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
+    console.log(err);
     res.status(500).json({ error: 'Failed to notify client' });
   }
 };

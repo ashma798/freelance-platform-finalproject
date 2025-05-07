@@ -17,13 +17,13 @@ const Payment = () => {
   
 
   useEffect(() => {
-    const fetchBidDetails = async () => {
+        const fetchBidDetails = async () => {
       try {
         const res = await axiosInstance.get(`/users/getbidDetails/${bidId}`);
         setBidData(res.data.data);
-       
+     
         const halfAmount = res.data.data.bid_amount / 2;
-        const stripeRes = await axiosInstance.post('/users/createPayment', {
+      const stripeRes = await axiosInstance.post('/users/createPayment', {
           clientId:res.data.data.client_id._id,
           jobId : res.data.data.job_id._id,
           amount: halfAmount,

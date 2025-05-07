@@ -14,6 +14,7 @@ const Freelancerdashboard = () => {
   const [loadingStatus, setLoadingStatus] = useState(false);
   const [status, setStatus] = useState("Pending");
   const [jobs, setJobs] = useState([]);
+  const [bid, setBid] = useState(null);
   const [submittedBids, setSubmittedBids] = useState([]);
   const navigate = useNavigate();
 
@@ -184,13 +185,13 @@ const Freelancerdashboard = () => {
           {/* Job Listings */}
           <h4 className="mb-3 text-muted">Available Projects</h4>
           {isLoading ? (
-  <div className="text-center my-4">
-    <div className="spinner-border text-primary" role="status">
-      <span className="visually-hidden">Loading...</span>
-    </div>
-    <p className="mt-2">Loading projects...</p>
-  </div>
-) :filteredJobs.length === 0 ? (
+            <div className="text-center my-4">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <p className="mt-2">Loading projects...</p>
+            </div>
+          ) : filteredJobs.length === 0 ? (
             <div className="col-12 text-center">
               <p>No projects match your search.</p>
             </div>
@@ -217,13 +218,20 @@ const Freelancerdashboard = () => {
                     <span className="text-success fs-5">₹{parseFloat(job.budget?.$numberDecimal).toFixed(2)}</span>
                     <div className="flex space-x-2">
                       <button
-                        className="btn btn-success bg-green-600 text-white py-2 px-4 btn-sm"
+                        className="btn btn-success py-2 px-4 btn-sm"
                         onClick={() => handleStatusChange(job._id, freelancerId)}
-
-                        style={{ borderRadius: "20px" }}
+                        disabled={job.status === "completed"}
+                        style={{
+                          borderRadius: "20px",
+                          backgroundColor: job.status === "completed" ? "#6c757d" : "#28a745",
+                          color: "white",
+                          cursor: job.status === "completed" ? "not-allowed" : "pointer"
+                        }}
                       >
                         {job.status === "completed" ? "Completed" : "Pending"}
                       </button>
+
+
                       <button
                         className={`btn btn-outline-primary btn-sm ${submittedBids.includes(job._id) ? 'bg-gray-400 text-white border-0' : ''
                           }`}

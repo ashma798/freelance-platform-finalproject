@@ -3,7 +3,7 @@ const router = express.Router();
 const { verifyToken, checkRole } = require("../Middlewares/auth");
 const {deleteJob,deleteUser,jobReport,clientReport,freelancerReport,paymentReport,users} = require("../Controllers/adminController");
 const {
-    addReview,viewClient,sendMessage,getLastPostedJobIdviewClient,viewJob,jobProfile,clientProfile,getBidDetails} = require("../Controllers/userController");
+    addReview,viewClient,sendMessage,getUsers,viewJob,jobProfile,clientProfile,getBidDetails} = require("../Controllers/userController");
 const {getFreelancerCount,getJobCount,getOpenProjectCount} = require('../Controllers/dashboardController')
 const { myProposal,viewProposals,addProposal,freelancerProfile,inviteFreelancer,bid,checkBid,freelancerBids,myBids} = require("../Controllers/freelancerController");
 const { createPayment,initialPaymentRelease,markAsCompleted} = require("../Controllers/paymentController");
@@ -39,7 +39,7 @@ router.get('/acceptBid',verifyToken,checkRole(['client']),acceptBid);
 router.get('/getBidDetails/:bidId',verifyToken,checkRole(['client','freelancer']),getBidDetails);
 router.post('/createPayment',verifyToken,checkRole(['client']),createPayment);
 router.post('/initialPaymentRelease',verifyToken,checkRole(['client','freelancer']),initialPaymentRelease);
-
+router.get('/getUsers/:receiverId', verifyToken, checkRole(['client','freelancer']), getUsers);
 
 /*FREELANCER ROUTES*/
 router.get('/getFreelancers',getFreelancers);

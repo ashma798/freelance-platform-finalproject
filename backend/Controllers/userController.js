@@ -476,10 +476,19 @@ addJob = async (req, res) => {
             });
         }
     },
+    getUsers = async (req, res) => {
+        const { receiverId } = req.params;
+      
+        const user = await userModel.findById(receiverId).select("_id name");
+        if (!user) return res.status(404).json({ message: "User not found" });
+      
+        res.json({ data: user });
+      };
 
 
 
     module.exports = {
+        getUsers,
         deleteJob,
         updateJob,
         clientProfile,
