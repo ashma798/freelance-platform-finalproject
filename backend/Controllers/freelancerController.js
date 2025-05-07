@@ -28,7 +28,7 @@ bid = async (req, res) => {
             const freelancer = await userModel.findById(newBid.freelancer_id);
             const freelancerName = freelancer.name;
             const freelancerEmail = freelancer.email;
-            const acceptBidLink = `https://freelance-platform-finalproject.vercel.app/AcceptBid?jobId=${job_id}&freelancerId=${client_id}&clientId=${freelancer._id}&bidId=${bidId}`; 
+            const acceptBidLink = `https://freelance-platform-finalproject.vercel.app/Client/AcceptBid?jobId=${job_id}&freelancerId=${client_id}&clientId=${freelancer._id}&bidId=${bidId}`; 
            // const acceptBidLink = `http://localhost:3000/Client/AcceptBid?jobId=${job_id}&freelancerId=${client_id}&clientId=${freelancer._id}&bidId=${bidId}`;
             await sendEmail({
 
@@ -88,7 +88,7 @@ bid = async (req, res) => {
                 const clientName = client.name;
                 const clientEmail = client.email;
                // const acceptBidLink = `http://localhost:3000/Freelancer/Bid?jobId=${job_id}&freelancerId=${freelancer_id}&clientId=${client._id}`;
-                const acceptBidLink = `https://freelance-platform-finalproject.vercel.app/Bid?jobId=${job_id}&freelancerId=${freelancer_id}&clientId=${client._id}`;
+                const acceptBidLink = `https://freelance-platform-finalproject.vercel.app/Freelancer/Bid?jobId=${job_id}&freelancerId=${freelancer_id}&clientId=${client._id}`;
                 
                 await sendEmail({
 
