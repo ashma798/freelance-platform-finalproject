@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const jobModel = require("../Models/jobModel");
-const proposalModel = require("../Models/proposalsModel");
-const freelancerProfileModel = require("../Models/freelancerProfileModel");
+const bidModel = require("../Models/bidModel");
+//const freelancerProfileModel = require("../Models/freelancerProfileModel");
 const paymentModel = require("../Models/paymentModel");
 const invitationModel = require("../Models/invitationModel");
 
