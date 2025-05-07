@@ -1,8 +1,8 @@
 import axios from 'axios';
 const token = localStorage.getItem('@token');
 const axiosInstance = axios.create({
-   // baseURL: 'https://freelance-platform-finalproject.onrender.com/api',
- baseURL: 'http://localhost:5000/api',
+    baseURL: 'https://freelance-platform-finalproject.onrender.com/api',
+ //baseURL: 'http://localhost:5000/api',
  timeout: 10000, 
 
         headers: {
