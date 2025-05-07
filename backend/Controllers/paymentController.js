@@ -160,7 +160,7 @@ markAsCompleted = async (req, res) => {
       return res.status(404).json({ message: 'Freelancer not found' });
     }
     
-    const finalPayLink = `https://freelance-platform-finalproject.vercel.app/${bidId}`; 
+    const finalPayLink = `https://freelance-platform-finalproject.vercel.app/Payment/${bidId}`; 
    // const finalPayLink = `http://localhost:3000/Payment/${bidId}`;
 
     await sendEmail({
