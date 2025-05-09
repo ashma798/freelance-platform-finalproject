@@ -9,6 +9,7 @@ const axiosInstance = axios.create({
            'Authorization': token ? `Bearer ${token}` : '',
             'Accept': 'application/json'
         }
+        
 });
 
 export default axiosInstance;
