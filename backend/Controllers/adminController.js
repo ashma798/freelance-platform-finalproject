@@ -115,7 +115,7 @@ deleteUser = async (req, res) => {
   },
   Clients = async (req, res) => {
     try {
-      const allClient = await userModel.find({ role: 'client' });
+      const allClient = await userModel.find({ role: 'client',isDeleted : 'false' });
 
       return res.status(200).json({
         success: true,
@@ -195,7 +195,8 @@ deleteUser = async (req, res) => {
 
     try {
       let filter = {
-        role: 'freelancer'
+        role: 'freelancer',
+        
       };
 
       if (search) {

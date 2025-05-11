@@ -34,7 +34,7 @@ router.get('/getJobCount', verifyToken,checkRole('client'), getJobCount);
 router.get('/getOpenProjectCount', verifyToken,checkRole('client'), getOpenProjectCount);
 router.get('/getProposalCount',verifyToken,checkRole('client'),getProposalCount);
 router.get('/myProposals/:clientId',verifyToken,checkRole(['client']),myProposals);
-router.get('/clientProfile/:clientId',verifyToken,checkRole(['client','freelancer']),clientProfile);
+router.get('/clientProfile/:clientId',verifyToken,checkRole(['client','freelancer','admin']),clientProfile);
 router.get('/acceptBid',verifyToken,checkRole(['client']),acceptBid);
 router.get('/getBidDetails/:bidId',verifyToken,checkRole(['client','freelancer']),getBidDetails);
 router.get('/getUsers/:receiverId', verifyToken, checkRole(['client','freelancer']), getUsers);

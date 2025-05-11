@@ -6,12 +6,13 @@ const AdminNavbar = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [clientId, setClientId] = useState('');
   const [userName, setUserName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('@user'));
     if (userData) {
-      //setClientId(userData._id);
+      setClientId(userData._id);
       setUserName(userData.name);
       setImageUrl(userData.image || 'https://via.placeholder.com/150');
     }
@@ -64,9 +65,7 @@ const AdminNavbar = () => {
 
             {dropdownOpen && (
               <ul className="absolute right-0 mt-2 w-40 bg-white text-black rounded-md shadow-lg z-50">
-                <li>
-                  <Link to={`/Client/clientProfile`} className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
-                </li>
+              
                 <li>
                   <button
                     onClick={handleLogout}
