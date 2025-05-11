@@ -5,7 +5,7 @@ const {deleteJob,deleteUser,jobReport,clientReport,freelancerReport,paymentRepor
 const {addReview,viewClient,getUsers,viewJob,jobProfile,clientProfile,getBidDetails,myProposals} = require("../Controllers/userController");
 const {getFreelancerCount,getJobCount,getOpenProjectCount} = require('../Controllers/dashboardController')
 const { myProposal,viewProposals,addProposal,freelancerProfile,inviteFreelancer,bid,checkBid,freelancerBids,myBids} = require("../Controllers/freelancerController");
-const {sendMessage,unreadMessages,markAsRead,chatHistory} = require('../Controllers/messageController');
+//const {sendMessage,unreadMessages,markAsRead,chatHistory} = require('../Controllers/messageController');
 const { createPayment,initialPaymentRelease,markAsCompleted } = require('../Controllers/paymentController');
 
 
