@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../axiosConfig/axiosConfig';
+import Swal from 'sweetalert2';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import {Link } from 'react-router-dom';
+
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
 
 const AdminDashboard = () => {
   const [userList, setUserList] = useState([]);
@@ -44,46 +47,123 @@ const AdminDashboard = () => {
     ],
   };
 
-  const handleToggleStatus = (id, type) => {
-    if (type === 'user') {
-      const updatedList = userList.map(user => {
-        if (user._id === id) {
-          return { ...user, isActive: !user.isActive };
-        }
-        return user;
+  const handleDelete = async (id, type) => {
+    try {
+      const url = type === 'user' ? '/users/deleteUser' : '/users/deleteJob';
+      await axiosInstance.delete(url, {
+        data: type === 'user' ? { userId: id } : { jobId: id },
       });
-      setUserList(updatedList);
-    } else if (type === 'job') {
-      const updatedList = jobList.map(job => {
-        if (job._id === id) {
-          return { ...job, isActive: !job.isActive };
-        }
-        return job;
+
+      Swal.fire({
+        icon: 'success',
+        title: `${type === 'user' ? 'User' : 'Job'} deleted successfully`,
+        showConfirmButton: false,
+        timer: 1500,
       });
-      setJobList(updatedList);
+
+      if (type === 'user') {
+        setUserList(prev => prev.filter(user => user._id !== id));
+      } else {
+        setJobList(prev => prev.filter(job => job._id !== id));
+      }
+    } catch (error) {
+      console.log('Error deleting:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Something went wrong!',
+      });
     }
   };
 
-  const handleDelete = (id, type) => {
-    if (type === 'user') {
-      const updatedList = userList.filter(user => user._id !== id);
-      setUserList(updatedList);
-    } else if (type === 'job') {
-      const updatedList = jobList.filter(job => job._id !== id);
-      setJobList(updatedList);
+  const handleToggleStatus = async (id, type) => {
+    try {
+      const url = type === 'user' ? '/users/toggleUserStatus' : '/users/toggleJobStatus';
+      const response = await axiosInstance.post(url, { id });
+
+    
+      if (response.data.success) {
+        if (type === 'user') {
+          setUserList(prev =>
+            prev.map(user => (user._id === id ? { ...user, isActive: !user.isActive } : user))
+          );
+        } else {
+          setJobList(prev =>
+            prev.map(job => (job._id === id ? { ...job, isActive: !job.isActive } : job))
+          );
+        }
+      }
+    } catch (error) {
+      console.log('Error toggling status:', error);
     }
   };
 
+ 
   const handleView = (id, type) => {
-    if (type === 'user') {
-      const selectedUser = userList.find(user => user._id === id);
-      console.log(selectedUser);  
-    } else if (type === 'job') {
-      const selectedJob = jobList.find(job => job._id === id);
-      console.log(selectedJob);  
+  const selectedItem =
+    type === 'user'
+      ? userList.find((user) => user._id === id)
+      : jobList.find((job) => job._id === id);
+     // console.log(selectedItem.budget);
+Swal.fire({
+    title: `
+      <div class="text-2xl font-bold text-gray-800 mb-4">
+        ${type === 'user' ? 'User Details' : 'Job Details'}
+      </div>`,
+    html: `
+      <div class="p-4 text-left bg-gray-50 rounded-lg space-y-3">
+        ${type === 'user' ? `
+          <div class="flex items-center gap-4">
+            <img src="https://res.cloudinary.com/dg6a6mitp/image/upload/v1746047520/${selectedItem.image}" 
+                 alt="Profile" 
+                 class="w-24 h-24 rounded-full object-cover border"/>
+            <div>
+              <p class="text-lg font-semibold text-gray-700">${selectedItem.name}</p>
+              <p class="text-sm text-gray-500">${selectedItem.email}</p>
+              <p class="text-sm text-gray-500">${selectedItem.role}</p>
+            </div>
+          </div>
+          <hr class="my-3 border-gray-200" />
+          <div class="grid grid-cols-2 gap-4">
+            <div><strong>Username:</strong> ${selectedItem.username}</div>
+            <div><strong>Phone:</strong> ${selectedItem.phone}</div>
+            <div><strong>Country:</strong> ${selectedItem.country}</div>
+            <div><strong>Status:</strong> 
+              <span class="px-2 py-1 rounded ${selectedItem.isActive ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
+                ${selectedItem.isActive ? 'Active' : 'Inactive'}
+              </span>
+            </div>
+          </div>
+        ` : `
+          <div class="grid grid-cols-1 gap-4">
+            <div><strong>Job Title:</strong> ${selectedItem.job_title}</div>
+            <div><strong>Description:</strong> ${selectedItem.description}</div>
+           <div><strong>Budget:</strong> Rs ${selectedItem.budget?.$numberDecimal ?? 'N/A'}</div>
+
+            <div><strong>Deadline:</strong> ${selectedItem.deadline ? new Date(selectedItem.deadline).toLocaleDateString('en-GB') : 'N/A'}</div>
+            <div><strong>Status:</strong> 
+              <span class="px-2 py-1 rounded ${selectedItem.status === 'Open' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
+                ${selectedItem.status}
+              </span>
+            </div>
+            <div><strong>Active:</strong> 
+              <span class="px-2 py-1 rounded ${selectedItem.isActive ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
+                ${selectedItem.isActive ? 'Active' : 'Inactive'}
+              </span>
+            </div>
+          </div>
+        `}
+      </div>
+    `,
+    width: 600,
+    showCloseButton: true,
+    focusConfirm: false,
+    customClass: {
+      popup: 'bg-white shadow-lg rounded-lg'
     }
+  });
+ 
   };
-  
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -140,6 +220,7 @@ const AdminDashboard = () => {
                   <th className="py-2 px-4 text-left">Email</th>
                   <th className="py-2 px-4 text-left">Role</th>
                   <th className="py-2 px-4 text-left">Status</th>
+
                   <th className="py-2 px-4 text-left">Actions</th>
                 </tr>
               </thead>
@@ -189,7 +270,7 @@ const AdminDashboard = () => {
                   <th className="py-2 px-4 text-left">Job Title</th>
                   <th className="py-2 px-4 text-left">Deadline</th>
                   <th className="py-2 px-4 text-left">Status</th>
-                  <th className="py-2 px-4 text-left">Active/Inactive</th>
+                
                   <th className="py-2 px-4 text-left flex space-x-4">Actions</th>
                 </tr>
               </thead>
@@ -199,16 +280,21 @@ const AdminDashboard = () => {
                     <td className="py-2 px-4">{job.job_title}</td>
                     {job.deadline ? new Date(job.deadline).toLocaleDateString('en-GB') : ''}
                     <td className="py-2 px-4">{job.status}</td>
-                    <td className="py-2 px-4">{job.isActive ? 'Active' : 'Inactive'}</td>
+                      <td className="py-2 px-4">{job.isActive ? 'Active' : 'Inactive'}</td>
                     <td className="py-2 px-4 flex space-x-4">
-                      
+                       <button
+                        onClick={() => handleView(job._id, 'job')}
+                        className="text-blue-600 hover:underline"
+                      >
+                        View
+                      </button>
                       <button
                         onClick={() => handleDelete(job._id, 'job')}
                         className="text-red-600 hover:underline"
                       >
                         Delete
                       </button>
-                      <label className="inline-flex items-center">
+                        <label className="inline-flex items-center">
                         <input
                           type="checkbox"
                           className="form-checkbox h-5 w-5 text-blue-600"
@@ -216,6 +302,7 @@ const AdminDashboard = () => {
                           onChange={() => handleToggleStatus(job._id, 'job')}
                         />
                       </label>
+                     
                     </td>
                   </tr>
                 ))}

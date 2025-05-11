@@ -41,7 +41,7 @@ const AdminNavbar = () => {
           AdminPanel
         </Link>
         <div className="hidden md:flex items-center space-x-8">
-          <Link to="/Admin/dashboard" className="text-white hover:text-gray-300 transition-all">Dashboard</Link>
+          <Link to="/Admin/admindashboard" className="text-white hover:text-gray-300 transition-all">Dashboard</Link>
           <Link to="/Admin/clientReport" className="text-white hover:text-gray-300 transition-all">clients</Link>
           <Link to="/Admin/freelancerReport" className="text-white hover:text-gray-300 transition-all">Freelancers</Link>
           

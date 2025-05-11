@@ -36,8 +36,16 @@ const jobSchema = new mongoose.Schema({
         enum: ['pending', 'in_progress', 'completed', 'cancelled'],
         default: 'pending',
         required: true
+    },
+ isActive: {
+        type: Boolean,
+        default: true
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
     }
-
+    
 
 },
     {

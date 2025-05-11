@@ -1,6 +1,7 @@
 const userModel = require('../Models/userModel');
 const jobModel = require('../Models/jobModel');
 const reviewModel = require('../Models/reviewModel');
+const bidModel = require('../Models/bidModel');
 
 
 deleteUser = async (req, res) => {
@@ -155,7 +156,7 @@ deleteUser = async (req, res) => {
   myProposals = async (req, res) => {
     try {
       const userId = req.userId;
-      const proposals = await Proposal.find({ client_id: userId }).populate('job_id freelancer_id', 'name job_title status');
+      const proposals = await bidModel.find({ client_id: userId }).populate('job_id freelancer_id', 'name job_title status');
 
       res.status(200).json({
         success: true,
@@ -295,6 +296,80 @@ deleteUser = async (req, res) => {
       console.error("Error fetching job reports:", error);
       res.status(500).json({ message: 'Server error' });
     }
+  },
+  toggleUserStatus = async (req, res) => {
+    try {
+      const { id } = req.body;
+  console.log("idxcxcxc:",id);
+      if (!id) {
+        return res.status(400).json({
+          success: false,
+          message: 'User ID is required',
+        });
+      }
+  
+      const user = await userModel.findById(id);
+  
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found',
+        });
+      }
+  
+      user.isActive = !user.isActive;
+      await user.save();
+  
+      return res.status(200).json({
+        success: true,
+        message: `User ${user.isActive ? 'activated' : 'deactivated'} successfully`,
+        data: user,
+      });
+    } catch (error) {
+      console.log('Error toggling user status:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Internal Server Error',
+      });
+    }
+  },
+  
+ 
+ toggleJobStatus = async (req, res) => {
+    try {
+      const { id } = req.body;
+  
+      if (!id) {
+        return res.status(400).json({
+          success: false,
+          message: 'Job ID is required',
+        });
+      }
+  
+      const job = await jobModel.findById(id);
+  
+      if (!job) {
+        return res.status(404).json({
+          success: false,
+          message: 'Job not found',
+        });
+      }
+  
+      job.isActive = !job.isActive;
+      await job.save();
+  
+      return res.status(200).json({
+        success: true,
+        message: `Job ${job.isActive ? 'activated' : 'deactivated'} successfully`,
+        data: job,
+      });
+    } catch (error) {
+      console.log('Error toggling job status:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Internal Server Error',
+      });
+    }
   };
 
 
@@ -307,5 +382,7 @@ module.exports = {
   clientReport,
   freelancerReport,
   jobReport,
-  paymentReport
+  paymentReport,
+  toggleUserStatus,
+  toggleJobStatus
 };
