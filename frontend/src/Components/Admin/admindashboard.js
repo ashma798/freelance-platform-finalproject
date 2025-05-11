@@ -220,7 +220,7 @@ Swal.fire({
                   <th className="py-2 px-4 text-left">Email</th>
                   <th className="py-2 px-4 text-left">Role</th>
                   <th className="py-2 px-4 text-left">Status</th>
-
+                 <th className="py-2 px-4 text-left">Active/Deactive</th>
                   <th className="py-2 px-4 text-left">Actions</th>
                 </tr>
               </thead>
