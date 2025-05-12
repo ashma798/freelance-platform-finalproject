@@ -37,7 +37,7 @@ const Jobs = () => {
       <div className="max-w-6xl mx-auto">
 
         {/* Search Bar */}
-        <div className="flex flex-col sm:flex-row items-center bg-blue-400 p-4 rounded-xl shadow-md mb-8 gap-4">
+        <div className="flex flex-col sm:flex-row items-center bg-green-200 p-4 rounded-xl shadow-md mb-8 gap-4">
   <div className="flex items-center gap-2 w-full sm:w-auto">
     <i className="bi bi-search text-2xl text-indigo-600"></i>
     <span className="font-semibold text-lg text-gray-700">Search</span>

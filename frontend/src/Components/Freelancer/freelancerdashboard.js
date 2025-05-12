@@ -126,7 +126,7 @@ const Freelancerdashboard = () => {
       <div className="row">
         {/* Left Column: Projects and Earnings */}
         <div className="col-md-8">
-          <h2 className="font-weight-bold text-primary">Welcome !</h2>
+          <h2 className="font-weight-bold text-primary">Welcome <span className="font-weight-bold text-primary h3">{loggeduser.name}</span></h2>
           <div className="relative">
             <button className="text-lg text-gray-700">
               <i className="bi bi-bell"></i>
