@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 import axiosInstance from '../axiosConfig/axiosConfig';
 import { toast } from 'react-toastify';
 
@@ -17,9 +17,12 @@ const Freelancerdashboard = () => {
   const [bid, setBid] = useState(null);
   const [submittedBids, setSubmittedBids] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const loggeduser = JSON.parse(localStorage.getItem("@user"));
   const freelancerId = loggeduser._id;
+
+    useEffect(() => {
   const FetchJobList = async () => {
     setIsLoading(true);
     try {
@@ -32,7 +35,10 @@ const Freelancerdashboard = () => {
     finally {
       setIsLoading(false);
     }
-  };
+  }
+   FetchJobList();
+  },[location.pathname]);
+
 
   const FetchClientList = async () => {
     try {
@@ -72,7 +78,6 @@ const Freelancerdashboard = () => {
   };
 
   useEffect(() => {
-    FetchJobList();
     FetchClientList();
     fetchSubmittedBids();
     FetchMessages();

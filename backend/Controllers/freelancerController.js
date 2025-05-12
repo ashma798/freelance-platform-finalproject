@@ -442,19 +442,27 @@ bid = async (req, res) => {
     myBids = async (req, res) => {
         const { freelancerId } = req.params;
         try {
+               const bids = await bidModel
+            .find({ freelancer_id: freelancerId })
+            .populate({
+                path: 'job_id',
+                select: 'title description client_id',
+                populate: {
+                    path: 'client_id',
+                    select: 'name email',
+                },
+            });
 
-            const bids = await bidModel
-                .find({ freelancer_id: freelancerId })
-                .populate('job_id', 'title description client_id')
-                .populate('client_id', 'name email');
-            res.json(bids);
-        } catch (err) {
+        // 👇 Filter out any null job references
+        const validBids = bids.filter(bid => bid.job_id !== null);
+
+        res.json(validBids);
+          } catch (err) {
             res.status(500).json({ message: "Error fetching bids" });
         }
     };
 
-
-
+          
 module.exports = {
     freelancerProfile,
     inviteFreelancer,

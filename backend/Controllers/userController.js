@@ -274,8 +274,10 @@ addJob = async (req, res) => {
     jobProfile = async (req, res) => {
         try {
             const { jobId } = req.params;
+           // console.log(jobId);
 
             const job = await jobModel.findById(jobId);
+         
             if (!job) {
                 return res.status(404).json({ message: 'job not found' });
             }
@@ -285,11 +287,12 @@ addJob = async (req, res) => {
                 description: job.description,
                 budget: job.budget,
                 skills_required: job.skills_required,
-                deadline: job.deadline
+                deadline: job.deadline,
+                created : job.createdAt
 
 
             };
-            console.error('data fecthing:', jobData);
+            //console.log('data fecthing:', jobData);
             return res.status(200).json({
                 success: true,
                 data: jobData

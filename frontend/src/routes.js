@@ -24,6 +24,7 @@ import ClientReport from "./Components/Admin/clientReport";
 import FreelancerReport from "./Components/Admin/freelancerReport";
 import JobReport from "./Components/Admin/jobReport";
 import BidList from "./Components/Freelancer/BidList";
+import JobProfile  from "./Components/Jobs/JobProfile";
 
 
 const stripePromise = loadStripe("pk_test_51RD96gR3dnpCBBb9NWyHF9GbJzo3RXxzuDEsv0KS0PTpUWuo6oQc5b2iBqcrGLNC5ZV50wIA6pKHUyAEoq0zfbt300gCcdhIzN");
@@ -63,6 +64,7 @@ const routes = createBrowserRouter([
     {  path: "/Admin/admindashboard",element: <ProtectedRoute element={<Layout><Admindashboard /></Layout>} />, },
     {  path: "/Admin/clientReport",element: <ProtectedRoute element={<Layout><ClientReport/></Layout>} />, },
     {  path: "/Admin/jobReport",element: <ProtectedRoute element={<Layout><JobReport /></Layout>} />, },
+    {  path: "/Jobs/JobProfile",element:<ProtectedRoute element={<Layout><JobProfile /></Layout>} />,},
     {  path: "/Admin/freelancerReport",element: <ProtectedRoute element={<Layout><FreelancerReport /></Layout>} />, },
     {  path: "/Client/clientdashboard",element: <ProtectedRoute element={<Layout><Clientdashboard /></Layout>} />, },
     {  path: "/Client/AddReview",element: <ProtectedRoute element={<Layout><AddReview /></Layout>} />, },
