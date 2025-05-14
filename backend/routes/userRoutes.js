@@ -6,7 +6,8 @@ const {addReview,viewClient,getUsers,viewJob,jobProfile,clientProfile,getBidDeta
 const {getFreelancerCount,getJobCount,getOpenProjectCount} = require('../Controllers/dashboardController')
 const { myProposal,viewProposals,addProposal,freelancerProfile,inviteFreelancer,bid,checkBid,freelancerBids,myBids} = require("../Controllers/freelancerController");
 //const {sendMessage,unreadMessages,markAsRead,chatHistory} = require('../Controllers/messageController');
-const { createPayment,initialPaymentRelease,markAsCompleted } = require('../Controllers/paymentController');
+const { createPayment,initialPaymentRelease,markAsCompleted,finalPaymentRelease,finalDetails } = require('../Controllers/paymentController');
+const { getWalletDetails, withdrawFunds } = require('../Controllers/walletController');
 
 
 /*ADMIN ROUTES*/
@@ -52,13 +53,17 @@ router.get('/jobProfile/:jobId',verifyToken,checkRole(['freelancer','client']),j
 router.get('/checkBid/:freelancerId',verifyToken,checkRole(['freelancer']),checkBid);
 router.get('/freelancerBids/:freelancerId', verifyToken, checkRole(['freelancer']), freelancerBids);
 router.get('/myBids/:freelancerId', verifyToken, checkRole(['freelancer']), myBids);
+router.get('/getWalletDetails/:freelancerId',verifyToken,checkRole(['freelancer']),getWalletDetails);
+router.post('/withdrawFunds',verifyToken,checkRole(['freelancer']), withdrawFunds);
 
+// Route to withdraw funds
 /*PAYMENT ROUTES*/
 router.post('/createPayment',verifyToken,checkRole(['client']),createPayment);
 router.post('/initialPaymentRelease',verifyToken,checkRole(['client','freelancer']),initialPaymentRelease);
 router.post('/markAsCompleted/:jobId/:freelancerId',verifyToken,checkRole(['freelancer']),markAsCompleted);
+router.post('/finalPaymentRelease',verifyToken,checkRole(['client','freelancer']),finalPaymentRelease);
+router.get('/finalDetails/:bidId',verifyToken,checkRole(['client']),finalDetails);
 
-/*Message Routes*/
 //router.post('/sendMessage',verifyToken,checkRole(['client','freelancer']), sendMessage);
 //router.get('/unreadMessages/:userId',verifyToken,checkRole(['client','freelancer']), unreadMessages);
 //router.put('/markAsRead',verifyToken,checkRole(['client','freelancer']), markAsRead);

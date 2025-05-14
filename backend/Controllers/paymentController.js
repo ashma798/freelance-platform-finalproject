@@ -13,7 +13,6 @@ const bidModel = require("../Models/bidModel");
 
 const createPayment = async (req, res) => {
   try {
-    //console.log(res.body);
     const { clientId, jobId, amount } = req.body;
   
     if (!clientId || !jobId || !amount) {
@@ -84,10 +83,30 @@ initialPaymentRelease = async (req, res) => {
       { upsert: true }
     );
     await jobModel.findByIdAndUpdate(jobId, { status: 'partialpaid' });
+     const freelancer = await userModel.findById(freelancerId);
+     const client = await userModel.findById(clientId);
+     const job = await jobModel.findById(jobId);
+    
+    if (!freelancer) {
+      return res.status(404).json({ error: "Freelancer not found" });
+    }
 
+     await sendEmail({
+      fromName:client.name,
+      fromEmail: client.email,
+      to: freelancer.email,
+      subject: `Bid Has Been Accepted By ${client.name}!`,
+      html: `
+       <h2>Congratulations, ${freelancer.name}!</h2>
+      <p>Your bid for the project <strong>${job.job_title}</strong> has been accepted, and the initial 50% payment of <strong>₹${amount}</strong> has been transferred to your wallet.</p>
+      <p>You can now start working on the project. Make sure to follow up with the client for project details.</p>
+      <br/>
+      <p>Happy freelancing!<br/>The Freelance Platform Team</p>
+    `,
+    });
+    
     res.status(200).json({ message: '50% released to freelancer' });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: 'Could not release 50%' });
   }
 },
@@ -106,62 +125,20 @@ markAsCompleted = async (req, res) => {
       { status: 'completed' },
       { new: true }
     );
-    console.log("biddata:",bid);
     const bidId = bid?._id;
-   const amount = bid?.bid_amount / 2;
-
-   
-   await Wallet.updateOne(
-    { user_id: freelancerId },
-    {
-      $inc: { balance: amount },
-      $push: {
-        transactions: {
-          job_id: jobId,
-          amount,
-          type: 'credit',
-          status: 'released'
-        }
-      }
-    },
-    { upsert: true }
-  );
-
-  // Update client wallet
-  await Wallet.updateOne(
-    { user_id: client_id },
-    {
-      $inc: { balance: -amount },
-      $push: {
-        transactions: {
-          job_id: jobId,
-          amount,
-          type: 'debit',
-          status: 'paid'
-        }
-      }
-    },
-    { upsert: true }
-  );
-  
-   
-    //const bid = await Bid.findOne({ jobId }); 
-   
-
     const client = await userModel.findById(client_id);
     if (!client) {
       return res.status(404).json({ message: 'Client not found' });
     }
     
-    console.log("Client email:", client.email); 
     const freelancer = await userModel.findById(freelancer_id);
     
     if (!freelancer) {
       return res.status(404).json({ message: 'Freelancer not found' });
     }
-    
-    const finalPayLink = `https://freelance-platform-finalproject.vercel.app/Payment/${bidId}`; 
-   // const finalPayLink = `http://localhost:3000/Payment/${bidId}`;
+   
+    const finalPayLink = `https://freelance-platform-finalproject.vercel.app/FinalPayment/${bidId}`; 
+   //const finalPayLink = `http://localhost:3000/FinalPayment/${bidId}`;
 
     await sendEmail({
       fromEmail: freelancer.email,
@@ -179,11 +156,112 @@ markAsCompleted = async (req, res) => {
       success: true,
       statusCode: 201,
       message: 'Marked as completed and email sent',
+      
     });
 
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: 'Failed to notify client' });
+  }
+},
+finalDetails = async (req, res) => {
+  const { bidId } = req.params;
+  try {
+    const bid = await bidModel.findById(bidId)
+      .populate('job_id')
+      .populate('client_id')
+      .populate('freelancer_id');
+
+    if (!bid) {
+      return res.status(404).json({ success: false, message: 'Bid not found' });
+    }
+
+    const jobDetails = {
+      title: bid.job_id.job_title,
+      description: bid.job_id.job_description,
+      budget: bid.job_id.budget,
+      status: bid.job_id.status,
+      client_id: bid.job_id.client_id,
+      _id: bid.job_id._id,
+    };
+
+    const initialPayment = bid.bid_amount / 2;
+    const remainingAmount = bid.bid_amount - initialPayment;
+
+    res.status(200).json({
+      success: true,
+      jobDetails,
+      initialPayment,
+      remainingAmount,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+},
+
+finalPaymentRelease = async (req, res) => {
+  const { jobId, amount } = req.body;
+
+  try {
+    const job = await jobModel.findById(jobId).populate('client_id');
+     const bid = await bidModel.findOne({ job_id: jobId }).populate('client_id');
+    if (!job) {
+      return res.status(404).json({ success: false, message: 'Job not found' });
+    }
+    const freelancerWallet = await Wallet.findOne({ user_id: bid.freelancer_id });
+    const clientWallet = await Wallet.findOne({ user_id: job.client_id });
+   
+    freelancerWallet.balance += amount;
+    clientWallet.balance -= amount;
+     freelancerWallet.transactions.push({
+      job_id: jobId,
+      amount,
+      type: 'credit',
+      status: 'released',
+      date: new Date(),
+    });
+
+    clientWallet.transactions.push({
+      job_id: jobId,
+      amount,
+      type: 'debit',
+      status: 'paid',
+      date: new Date(),
+    });
+
+    await freelancerWallet.save();
+    await clientWallet.save();
+
+    const freelancer = await userModel.findById(bid.freelancer_id);
+    const client = await userModel.findById(job.client_id);
+
+    if (freelancer && freelancer.email) {
+      await sendEmail({
+      fromEmail: freelancer.email,
+      to: client.email,
+      subject: `Payment Received`,
+      html: `
+        <p>Hi ${client.name},</p>
+        <p>Successfully received a payment of ₹${amount} for Job : ${job.job_title}</p>
+        <p>Best regards,<br/>${freelancer.name}</p>
+      `,
+    });
+    }
+
+    if (client && client.email) {
+     await sendEmail({
+        fromEmail: client.email,
+        subject: `Payment Received`,
+      html: `
+        You have successfully released a payment of ₹${amount} for Job ID: ${jobId}.`
+    });
+    }
+   
+    res.status(200).json({ success: true, message: 'Final payment released successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
 
@@ -191,5 +269,7 @@ markAsCompleted = async (req, res) => {
 module.exports = {
   markAsCompleted,
   initialPaymentRelease,
-  createPayment
+  createPayment,
+  finalPaymentRelease,
+  finalDetails
 }

@@ -1,5 +1,7 @@
 import { createBrowserRouter,Navigate} from "react-router-dom";
-import  Login from "./Layout/Authentication";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import Login from "./Layout/Authentication";
 import Register from "./Layout/Register";
 import Clientdashboard from "./Components/Client/clientdashboard";
 import Admindashboard from "./Components/Admin/admindashboard";
@@ -13,11 +15,9 @@ import Proposal from "./Components/Freelancer/MyProposal";
 import Home from "./Components/Home";
 import Freelancerprofile from "./Components/Freelancer/freelancerProfile";
 import Clientprofile from "./Components/Client/clientProfile";
-import  MyProposal  from "./Components/Freelancer/MyProposal";
+import MyProposal  from "./Components/Freelancer/MyProposal";
 import Chat from "./Components/Chat/Chat";
 import AcceptBid from "./Components/Client/AcceptBid";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
 import Payment from "./Components/Payment/Payment";
 import AddReview from "./Components/Client/AddReview";
 import ClientReport from "./Components/Admin/clientReport";
@@ -25,6 +25,8 @@ import FreelancerReport from "./Components/Admin/freelancerReport";
 import JobReport from "./Components/Admin/jobReport";
 import BidList from "./Components/Freelancer/BidList";
 import JobProfile  from "./Components/Jobs/JobProfile";
+import FinalPayment from "./Components/Payment/FinalPayment";
+import Wallet from "./Components/Freelancer/Wallet";
 
 
 const stripePromise = loadStripe("pk_test_51RD96gR3dnpCBBb9NWyHF9GbJzo3RXxzuDEsv0KS0PTpUWuo6oQc5b2iBqcrGLNC5ZV50wIA6pKHUyAEoq0zfbt300gCcdhIzN");
@@ -57,10 +59,10 @@ const FallbackRoute = () => {
 
 
 const routes = createBrowserRouter([
-   { path: "/Home", element: <Home/> },
-    { path: "/authentication/login", element: <Login /> },
-    { path: "/authentication/register", element: <Register /> },
-    { path: "/", element: <Home/> },
+    {  path: "/Home", element: <Home/> },
+    {  path: "/", element: <Home/> },
+    {  path: "/authentication/login", element: <Login /> },
+    {  path: "/authentication/register", element: <Register /> },
     {  path: "/Admin/admindashboard",element: <ProtectedRoute element={<Layout><Admindashboard /></Layout>} />, },
     {  path: "/Admin/clientReport",element: <ProtectedRoute element={<Layout><ClientReport/></Layout>} />, },
     {  path: "/Admin/jobReport",element: <ProtectedRoute element={<Layout><JobReport /></Layout>} />, },
@@ -73,15 +75,17 @@ const routes = createBrowserRouter([
     {  path: "/Client/clientProfile",element: <ProtectedRoute element={<Layout><Clientprofile /></Layout>} />, },
     {  path: "/Client/AcceptBid",element: <ProtectedRoute element={<Layout><AcceptBid /></Layout>} />, },
     {  path: "/Client/ProposalList", element : <ProtectedRoute element={<Layout><ProposalList/></Layout> } />,},
-    {  path: "/Payment/:bidId",element: (<ProtectedRoute element={<Elements stripe={stripePromise}><Layout><Payment /></Layout></Elements>}/>), },  
-    {  path: "/Jobs/Jobs",element: <ProtectedRoute element={<Layout><Jobs /></Layout>} />, },
-    {   path:"/Jobs/AddJob",element: <ProtectedRoute element={<Layout><AddJob/></Layout>}/>,},
+    {  path: "/Payment/:bidId",element: (<ProtectedRoute element={<Elements stripe={stripePromise}><Layout><Payment /></Layout></Elements>}/>), }, 
+    {  path: "/FinalPayment/:bidId",element: (<ProtectedRoute element={<Elements stripe={stripePromise}><Layout><FinalPayment /></Layout></Elements>}/>), },  
+    {  path: "/Jobs/Jobs",element: <ProtectedRoute element={<Layout><Jobs /></Layout>} />, }, 
+    {  path:"/Jobs/AddJob",element: <ProtectedRoute element={<Layout><AddJob/></Layout>}/>,},
     {  path: "/Freelancer/Bid", element : <ProtectedRoute element={<Layout><Bid/></Layout> } />,},
     {  path: "/Freelancer/Proposal", element : <ProtectedRoute element={<Layout><Proposal/></Layout> } />,},
     {  path: "/Freelancer/BidList", element : <ProtectedRoute element={<Layout><BidList/></Layout> } />,},
     {  path: "/Freelancer/MyProposal", element : <ProtectedRoute element={<Layout><MyProposal/></Layout> } />,},
     {  path: "/Chat/Chat/:receiverId", element: <ProtectedRoute element={<Layout><Chat /></Layout>} />,},
-    { path: "*", element : <Navigate to="/authentication/login" />}, 
+    {  path: "/Freelancer/Wallet", element: <ProtectedRoute element={<Layout><Wallet /></Layout>} />,},
+    {  path: "*", element : <Navigate to="/authentication/login" />}, 
    
   ]);
 
