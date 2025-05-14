@@ -82,7 +82,7 @@ const FreelancerNavbar = () => {
                 <Link to={`/Freelancer/freelancerProfile?freelancerId=${freelancerId}`}   className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
               </li>
               <li>
-                <Link to="#" className="block px-4 py-2 hover:bg-gray-100">Wallet</Link>
+                <Link to="/Freelancer/Wallet" className="block px-4 py-2 hover:bg-gray-100">Wallet</Link>
               </li>
               <li><hr className="my-1" /></li>
               <li>
