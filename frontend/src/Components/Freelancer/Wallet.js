@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axiosInstance from '../axiosConfig/axiosConfig';
-
+import { toast } from 'react-toastify'; 
 const Wallet = () => {
   const freelancer = JSON.parse(localStorage.getItem('@user'));
   const freelancerId = freelancer._id;
@@ -17,7 +17,7 @@ const Wallet = () => {
           setWalletBalance(response.data.balance);
           setTransactions(response.data.transactions);
         } else {
-          console.error('Failed to fetch wallet details');
+          toast.error('Failed to fetch wallet details');
         }
       } catch (error) {
         console.error('Error:', error);
@@ -28,11 +28,11 @@ const Wallet = () => {
 
   const handleWithdraw = async () => {
     if (withdrawAmount > walletBalance) {
-      alert('Insufficient balance');
+      toast.error('Insufficient balance');
       return;
     }
     if (withdrawAmount <= 0) {
-      alert('Enter a valid amount');
+      toast.error('Enter a valid amount');
       return;
     }
 
@@ -43,13 +43,13 @@ const Wallet = () => {
       });
 
       if (response.status === 200) {
-        alert('Withdrawal successful');
+        toast.success('Withdrawal successful');
         setWalletBalance(response.data.balance);
         setWithdrawAmount('');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Withdrawal failed');
+      toast.error('Withdrawal failed');
     }
   };
 
