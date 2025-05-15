@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { verifyToken, checkRole } = require("../Middlewares/auth");
 const {deleteJob,deleteUser,jobReport,clientReport,freelancerReport,paymentReport,toggleUserStatus,toggleJobStatus} = require("../Controllers/adminController");
-const {addReview,viewClient,getUsers,viewJob,jobProfile,clientProfile,getBidDetails,myProposals} = require("../Controllers/userController");
+const {addReview,viewClient,getUsers,viewJob,jobProfile,clientProfile,getBidDetails,myProposals,completedJobs} = require("../Controllers/userController");
 const {getFreelancerCount,getJobCount,getOpenProjectCount} = require('../Controllers/dashboardController')
 const { myProposal,viewProposals,addProposal,freelancerProfile,inviteFreelancer,bid,checkBid,freelancerBids,myBids} = require("../Controllers/freelancerController");
 //const {sendMessage,unreadMessages,markAsRead,chatHistory} = require('../Controllers/messageController');
@@ -28,6 +28,7 @@ router.post('/toggleJobStatus',verifyToken,checkRole(['admin']),toggleJobStatus)
 router.post('/addJob',verifyToken,checkRole('client'),addJob);
 router.post('/addReview',verifyToken,checkRole(['client']),addReview);
 router.get('/viewProposals',verifyToken,checkRole('client'),viewProposals);
+router.get('/completedJobs/:freelancerId',verifyToken,checkRole('client'),completedJobs);
 router.post('/getLastPostedJobId',verifyToken,checkRole('client'),getLastPostedJobId);
 router.post('/inviteFreelancer',verifyToken,checkRole('client'),inviteFreelancer);
 router.get('/getFreelancerCount', verifyToken,checkRole('client'), getFreelancerCount);

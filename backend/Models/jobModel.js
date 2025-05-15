@@ -7,6 +7,12 @@ const jobSchema = new mongoose.Schema({
         ref: "users",
         required: true
     },
+    freelancer_id:
+    {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+        required: false
+    },
     job_title:
     {
         type: String,

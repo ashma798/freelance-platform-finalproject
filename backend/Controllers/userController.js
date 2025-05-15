@@ -123,333 +123,313 @@ addJob = async (req, res) => {
             });
         }
     },
-
-    updateJob = async (req, res) => {
+    completedJobs = async (req, res) => {
         try {
-            const { jobId, updatedData } = req.body;
-
-            const updatedJob = await jobModel.findByIdAndUpdate(
-                jobId,
-                updatedData,
-                { new: true }
-            );
-
-            if (!jobId) {
-                return res.status(404).json({
-                    success: false,
-                    statusCode: 404,
-                    message: "job not found"
-                });
-            }
-
-            return res.status(200).json({
-                success: true,
-                statusCode: 200,
-                message: "job updated successfully",
-                data: updatedJob
-            });
-        } catch (e) {
-            console.error("Update error:", e);
-            res.status(500).json({
-                success: false,
-                statusCode: 500,
-                message: "Internal Server Error"
-            });
+            const completedJobs = await jobModel.find({ status: 'completed' }).select('_id job_title');
+            res.status(200).json(completedJobs);
+        } catch (error) {
+            res.status(500).json({ message: 'Error fetching jobs', error });
         }
     },
-    addReview = async (req, res) => {
-        try {
-            //console.log("Received data:", req.body);
-            const { reviewer_id, reviewee_id, start_date, end_date, rating, comment } = req.body;
+        addReview = async (req, res) => {
+            try {
+                console.log("Received data:", req.body);
+                const { reviewer_id, reviewee_id,job_id, start_date, end_date, rating, comment } = req.body;
 
-            if (reviewer_id && reviewee_id && rating) {
+                if (reviewer_id && reviewee_id && job_id ) {
 
-                const newReview = new reviewModel({
-                    reviewer_id,
-                    reviewee_id,
-                    start_date,
-                    end_date,
-                    rating,
-                    comment,
+                    const newReview = new reviewModel({
+                        reviewer_id,
+                        reviewee_id,
+                        job_id,
+                        start_date,
+                        end_date,
+                        rating,
+                        comment
 
+                    });
+                    newReview.save()
+                        .then((response) => {
+                            console.log("response: ", response);
+
+                            return res.status(201).json({
+                                success: true,
+                                statusCode: 201,
+                                message: "Review  and Rating added successfully",
+                            });
+                        })
+                        .catch((error) => {
+                            console.log("error: ", error);
+
+                            return res.status(200).json({
+                                success: false,
+                                statusCode: 400,
+                                message: "adding new Rating  failed"
+                            });
+                        })
+
+                } else {
+                    return res.status(200).json({
+                        success: false,
+                        statusCode: 400,
+                        message: "Missing required fields"
+                    });
+                }
+
+            } catch (err) {
+                res.status(500).json({
+                    success: false,
+                    statusCode: 500,
+                    message: "Internal Server Error"
                 });
-                newReview.save()
-                    .then((response) => {
-                        console.log("response: ", response);
+            }
+        },
+        getLastPostedJobId = async (req, res) => {
+            try {
 
-                        return res.status(201).json({
-                            success: true,
-                            statusCode: 201,
-                            message: "Review  and Rating added successfully",
-                        });
-                    })
-                    .catch((error) => {
-                        console.log("error: ", error);
+                const userId = req.userId;
+                const lastJob = await jobModel
+                    .findOne({ client_id: userId })
+                    .sort({ _id: -1 })
+                    .limit(1);
 
-                        return res.status(200).json({
-                            success: false,
-                            statusCode: 400,
-                            message: "adding new Rating  failed"
-                        });
-                    })
+                if (lastJob) {
+                    res.status(200).json({ data: lastJob._id });
 
-            } else {
+                } else {
+                    return res.status(404).json({ success: false, message: 'No job found for this user.' });
+                }
+            } catch (error) {
+                console.error('Error fetching last posted job:', error);
+                return res.status(500).json({ success: false, message: 'Internal server error.' });
+            }
+        },
+
+
+        clientProfile = async (req, res) => {
+            try {
+                const { clientId } = req.params;
+
+
+                const user = await userModel.findById(clientId).select('-password');
+                if (!user || user.role !== 'client') {
+                    return res.status(404).json({ message: 'client not found' });
+                }
+                const clientProfile = await clientProfileModel.findOne({ user_id: user._id });
+
+                console.log("Received client:", clientProfile);
+                if (!clientProfile) {
+                    return res.status(404).json({ message: 'client profile not found' });
+                }
+                const clientData = {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    phone: user.phone,
+                    email: user.email,
+                    country: user.country,
+                    image: user.image,
+                    website: clientProfile.website,
+                    bio: clientProfile.bio
+                };
+
                 return res.status(200).json({
+                    success: true,
+                    data: clientData
+                });
+
+            } catch (error) {
+                console.error('Error fetching  profile:', error);
+                return res.status(500).json({
                     success: false,
-                    statusCode: 400,
-                    message: "Missing required fields"
+                    message: 'Internal Server Error'
                 });
             }
+        },
+        jobProfile = async (req, res) => {
+            try {
+                const { jobId } = req.params;
+                // console.log(jobId);
 
-        } catch (err) {
-            res.status(500).json({
-                success: false,
-                statusCode: 500,
-                message: "Internal Server Error"
-            });
-        }
-    },
-    getLastPostedJobId = async (req, res) => {
-        try {
+                const job = await jobModel.findById(jobId);
 
-            const userId = req.userId;
-            const lastJob = await jobModel
-                .findOne({ client_id: userId })
-                .sort({ _id: -1 })
-                .limit(1);
+                if (!job) {
+                    return res.status(404).json({ message: 'job not found' });
+                }
+                const jobData = {
+                    id: job._id,
+                    job_title: job.job_title,
+                    description: job.description,
+                    budget: job.budget,
+                    skills_required: job.skills_required,
+                    deadline: job.deadline,
+                    created: job.createdAt
 
-            if (lastJob) {
-                res.status(200).json({ data: lastJob._id });
 
-            } else {
-                return res.status(404).json({ success: false, message: 'No job found for this user.' });
+                };
+                //console.log('data fecthing:', jobData);
+                return res.status(200).json({
+                    success: true,
+                    data: jobData
+
+
+                });
+
+            } catch (error) {
+                console.error('Error fetching  profile:', error);
+                return res.status(500).json({
+                    success: false,
+                    message: 'Internal Server Error'
+                });
             }
-        } catch (error) {
-            console.error('Error fetching last posted job:', error);
-            return res.status(500).json({ success: false, message: 'Internal server error.' });
-        }
-    },
+        },
 
 
-    clientProfile = async (req, res) => {
-        try {
-            const { clientId } = req.params;
+        sendMessage = async (req, res) => {
+            try {
+                const senderId = req.user_id;
+                const { receiverId, message } = req.body;
 
+                if (!receiverId || !message) {
+                    return res.status(400).json({ success: false, message: "Receiver and message are required" });
+                }
 
-            const user = await userModel.findById(clientId).select('-password');
-            if (!user || user.role !== 'client') {
-                return res.status(404).json({ message: 'client not found' });
+                const newMessage = new messageModel({
+                    senderId,
+                    receiverId,
+                    message,
+                });
+
+                await newMessage.save();
+
+                res.status(201).json({
+                    success: true,
+                    message: "Message sent successfully",
+                    data: newMessage,
+                });
+
+            } catch (err) {
+                console.error("Send Message Error:", err);
+                res.status(500).json({ success: false, message: "Server Error" });
             }
-            const clientProfile = await clientProfileModel.findOne({ user_id: user._id });
+        },
+        getMessages = async (req, res) => {
+            try {
+                const userId = req.userId;
+                const messages = await messageModel.find({ receiverId: userId })
+                    .populate('senderId', 'name')
+                    .sort({ timestamp: -1 });
 
-            console.log("Received client:", clientProfile);
-            if (!clientProfile) {
-                return res.status(404).json({ message: 'client profile not found' });
+                res.status(200).json({
+                    success: true,
+                    data: messages,
+                });
+            } catch (err) {
+                console.error('Error fetching messages:', err);
+                res.status(500).json({
+                    success: false,
+                    message: 'Internal Server Error',
+                });
             }
-            const clientData = {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                phone: user.phone,
-                email: user.email,
-                country: user.country,
-                image: user.image,
-                website: clientProfile.website,
-                bio: clientProfile.bio
-            };
+        },
 
-            return res.status(200).json({
-                success: true,
-                data: clientData
-            });
+        viewClient = async (req, res) => {
+            try {
+                const allClient = await userModel.find({ role: 'client' });
 
-        } catch (error) {
-            console.error('Error fetching  profile:', error);
-            return res.status(500).json({
-                success: false,
-                message: 'Internal Server Error'
-            });
-        }
-    },
-    jobProfile = async (req, res) => {
-        try {
-            const { jobId } = req.params;
-           // console.log(jobId);
-
-            const job = await jobModel.findById(jobId);
-         
-            if (!job) {
-                return res.status(404).json({ message: 'job not found' });
+                return res.status(200).json({
+                    success: true,
+                    statusCode: 200,
+                    message: "all Client retrieved successfully",
+                    count: allClient.length,
+                    data: allClient
+                });
+            } catch (err) {
+                console.log("errro:", err);
+                return res.status(500).json({
+                    success: false,
+                    statusCode: 500,
+                    message: "Failed to fetch client"
+                })
             }
-            const jobData = {
-                id: job._id,
-                job_title: job.job_title,
-                description: job.description,
-                budget: job.budget,
-                skills_required: job.skills_required,
-                deadline: job.deadline,
-                created : job.createdAt
+        },
+        myProposals = async (req, res) => {
+            try {
+                const { clientId } = req.params;
+                const proposals = await bidModel.find({ client_id: clientId })
+                    .populate('job_id', 'job_title')
+                    .populate('freelancer_id', 'name');
 
+                const formattedProposals = proposals.map((proposal) => ({
+                    _id: proposal._id,
+                    title: proposal.job_id.job_title,
+                    bidAmount: proposal.bid_amount,
+                    status: proposal.status,
+                    freelancerName: proposal.freelancer_id.name,
+                }));
 
-            };
-            //console.log('data fecthing:', jobData);
-            return res.status(200).json({
-                success: true,
-                data: jobData
-
-
-            });
-
-        } catch (error) {
-            console.error('Error fetching  profile:', error);
-            return res.status(500).json({
-                success: false,
-                message: 'Internal Server Error'
-            });
-        }
-    },
-
-
-    sendMessage = async (req, res) => {
-        try {
-            const senderId = req.user_id;
-            const { receiverId, message } = req.body;
-
-            if (!receiverId || !message) {
-                return res.status(400).json({ success: false, message: "Receiver and message are required" });
+                res.status(200).json({
+                    success: true,
+                    data: formattedProposals,
+                });
+            } catch (err) {
+                console.error('Error fetching proposals:', err);
+                res.status(500).json({ success: false, message: 'Server Error' });
             }
+        };
 
-            const newMessage = new messageModel({
-                senderId,
-                receiverId,
-                message,
-            });
 
-            await newMessage.save();
+acceptBid = async (req, res) => {
+    const { bidId, amount } = req.params;
+    const { clientId } = req.body;
 
-            res.status(201).json({
-                success: true,
-                message: "Message sent successfully",
-                data: newMessage,
-            });
+    try {
+        const bid = await bidModel.findById(bidId).populate('job_id freelancer_id');
+        console.log("bidding data:",bid);
 
-        } catch (err) {
-            console.error("Send Message Error:", err);
-            res.status(500).json({ success: false, message: "Server Error" });
+        if (!bid) {
+            return res.status(404).json({ message: 'Bid not found' });
         }
-    },
-    getMessages = async (req, res) => {
-        try {
-            const userId = req.userId;
-            const messages = await messageModel.find({ receiverId: userId })
-                .populate('senderId', 'name')
-                .sort({ timestamp: -1 });
 
-            res.status(200).json({
-                success: true,
-                data: messages,
-            });
-        } catch (err) {
-            console.error('Error fetching messages:', err);
-            res.status(500).json({
-                success: false,
-                message: 'Internal Server Error',
-            });
+
+        const project = await jobModel.findById(bid.job_id);
+        if (project.client_id.toString() !== clientId) {
+            return res.status(403).json({ message: 'You are not authorized to accept this bid' });
         }
-    },
 
-    viewClient = async (req, res) => {
-        try {
-            const allClient = await userModel.find({ role: 'client' });
+        const amount = bid.amount * 0.5;
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: amount * 100,
+            currency: 'usd',
+            payment_method_types: ['card'],
+        });
 
-            return res.status(200).json({
-                success: true,
-                statusCode: 200,
-                message: "all Client retrieved successfully",
-                count: allClient.length,
-                data: allClient
-            });
-        } catch (err) {
-            console.log("errro:", err);
-            return res.status(500).json({
-                success: false,
-                statusCode: 500,
-                message: "Failed to fetch client"
-            })
+
+        bid.status = 'accepted';
+        await bid.save();
+        project.freelancer_id = bid.freelancer_id._id;
+        await project.save();
+
+
+
+
+        let freelancerWallet = await Wallet.findOne({ userId: bid.freelancerId });
+        if (!freelancerWallet) {
+            freelancerWallet = new Wallet({ userId: bid.freelancerId });
         }
-    },
-    myProposals = async (req, res) => {
-        try {
-          const {clientId}  = req.params;
-          const proposals = await bidModel.find({ client_id: clientId })
-            .populate('job_id', 'job_title')
-            .populate('freelancer_id', 'name');
-      
-          const formattedProposals = proposals.map((proposal) => ({
-            _id: proposal._id,
-            title: proposal.job_id.job_title,
-            bidAmount: proposal.bid_amount,
-            status: proposal.status,
-            freelancerName: proposal.freelancer_id.name,
-          }));
-      
-          res.status(200).json({
-            success: true,
-            data: formattedProposals,
-          });
-        } catch (err) {
-          console.error('Error fetching proposals:', err);
-          res.status(500).json({ success: false, message: 'Server Error' });
-        }
-      };
-      
-
-    acceptBid = async (req, res) => {
-        const { bidId, amount } = req.params;
-        const { clientId } = req.body;
-
-        try {
-            const bid = await Bid.findById(bidId).populate('projectId freelancerId');
-
-            if (!bid) {
-                return res.status(404).json({ message: 'Bid not found' });
-            }
+        freelancerWallet.balance += amount;
+        await freelancerWallet.save();
 
 
-            const project = await Project.findById(bid.projectId);
-            if (project.clientId.toString() !== clientId) {
-                return res.status(403).json({ message: 'You are not authorized to accept this bid' });
-            }
-
-            const amount = bid.amount * 0.5;
-            const paymentIntent = await stripe.paymentIntents.create({
-                amount: amount * 100,
-                currency: 'usd',
-                payment_method_types: ['card'],
-            });
-
-
-            bid.status = 'accepted';
-            await bid.save();
-
-
-            let freelancerWallet = await Wallet.findOne({ userId: bid.freelancerId });
-            if (!freelancerWallet) {
-                freelancerWallet = new Wallet({ userId: bid.freelancerId });
-            }
-            freelancerWallet.balance += amount;
-            await freelancerWallet.save();
-
-
-            res.status(200).json({
-                message: 'Bid accepted successfully!',
-                paymentIntent: paymentIntent.client_secret,
-            });
-        } catch (err) {
-            console.error(err);
-            res.status(500).json({ message: 'Server error, please try again later' });
-        }
-    },
+        res.status(200).json({
+            message: 'Bid accepted successfully!',
+            paymentIntent: paymentIntent.client_secret,
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error, please try again later' });
+    }
+},
 
     getBidDetails = async (req, res) => {
         try {
@@ -492,28 +472,28 @@ addJob = async (req, res) => {
     },
     getUsers = async (req, res) => {
         const { receiverId } = req.params;
-      
+
         const user = await userModel.findById(receiverId).select("_id name");
         if (!user) return res.status(404).json({ message: "User not found" });
-      
+
         res.json({ data: user });
-      };
-
-
-
-    module.exports = {
-        getUsers,
-        deleteJob,
-        updateJob,
-        clientProfile,
-        jobProfile,
-        getBidDetails,
-        addReview,
-        acceptBid,
-        sendMessage,
-        getMessages,
-        getLastPostedJobId,
-        viewClient,
-        viewJob,
-        myProposals
     };
+
+
+
+module.exports = {
+    getUsers,
+    deleteJob,
+    clientProfile,
+    jobProfile,
+    getBidDetails,
+    addReview,
+    acceptBid,
+    sendMessage,
+    getMessages,
+    getLastPostedJobId,
+    viewClient,
+    viewJob,
+    myProposals,
+    completedJobs
+};

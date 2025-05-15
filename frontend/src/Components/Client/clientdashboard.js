@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axiosInstance from '../axiosConfig/axiosConfig';
-import { useNavigate,useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const ClientDashboard = () => {
   const [search, setSearch] = useState('');
@@ -12,9 +12,9 @@ const ClientDashboard = () => {
   const [proposalCount, setProposalCount] = useState(0);
   const [paymentCount, setPaymentCount] = useState(0);
   const [postedJob, setPostedJob] = useState(null);
- 
 
-const location = useLocation();
+
+  const location = useLocation();
 
 
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ const location = useLocation();
         const proposalCount = await axiosInstance.get('/users/getProposalCount');
         setProposalCount(proposalCount.data.count);
 
-        } catch (err) {
+      } catch (err) {
         console.error("Error fetching dashboard stats", err);
       }
     };
@@ -51,7 +51,7 @@ const location = useLocation();
       }
     };
     fetchFreelancerList();
-  },[location.pathname]);
+  }, [location.pathname]);
 
   const handlePostJobClick = () => navigate('/Jobs/addJob');
 
@@ -78,28 +78,28 @@ const location = useLocation();
   };
 
   const handleAddReviewClick = (freelancerId) => {
-    navigate(`/Client/AddReview?${freelancerId}`);
-    };
-  
+    navigate(`/Client/AddReview?freelancerId=${freelancerId}`);
+  };
+
 
   const filteredFreelancers = search
-  ? freelancerList.filter((f) => 
+    ? freelancerList.filter((f) =>
       f.name.toLowerCase().includes(search.toLowerCase()) ||
       f.skills.some(skill => skill.toLowerCase().includes(search.toLowerCase()))
     )
-  : freelancerList;
+    : freelancerList;
 
   return (
     <div className="container my-4">
-      <h2 className="mb-4">Welcome, Client!</h2>
+      <h2 className="mb-4">Welcome </h2>
 
       {/* Summary Cards */}
       <div className="row g-4 mb-4">
         {[{ label: 'Total Projects', value: jobCount, icon: 'bi-folder-fill', color: 'primary' },
-          { label: 'Proposals', value: proposalCount, icon: 'bi-clipboard-check-fill', color: 'success' },
-          { label: 'Freelancers', value: freelancerCount, icon: 'bi-people-fill', color: 'info' },
-          { label: 'Open Projects', value: openProjectCount, icon: 'bi-briefcase-fill', color: 'warning' },
-          { label: 'Payments', value: paymentCount, icon: 'bi-cash-coin', color: 'purple' }
+        { label: 'Proposals', value: proposalCount, icon: 'bi-clipboard-check-fill', color: 'success' },
+        { label: 'Freelancers', value: freelancerCount, icon: 'bi-people-fill', color: 'info' },
+        { label: 'Open Projects', value: openProjectCount, icon: 'bi-briefcase-fill', color: 'warning' },
+        { label: 'Payments', value: paymentCount, icon: 'bi-cash-coin', color: 'purple' }
         ].map(({ label, value, icon, color }, index) => (
           <div key={index} className="col-md-2 col-sm-6">
             <div className={`bg-${color} text-white p-3 rounded text-center`}>
@@ -145,7 +145,7 @@ const location = useLocation();
               <div className="card-body d-flex flex-column">
                 <div className="d-flex mb-3">
                   <img
-                   src={`https://res.cloudinary.com/dg6a6mitp/image/upload/v1746047520/${freelancer.image}`}
+                    src={`https://res.cloudinary.com/dg6a6mitp/image/upload/v1746047520/${freelancer.image}`}
                     alt="Freelancer"
                     className="rounded me-3"
                     style={{ width: "90px", height: "90px", objectFit: "cover" }}
@@ -172,8 +172,8 @@ const location = useLocation();
                     Add Review
                   </button>
                 </div>
-                
-                 
+
+
               </div>
             </div>
           </div>

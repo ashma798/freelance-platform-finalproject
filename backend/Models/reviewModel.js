@@ -13,6 +13,12 @@ const reviewSchema = new  mongoose.Schema({
         ref:"users",
         required:true
     },
+     job_id:
+    {
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Jobs",
+        required:true
+    },
     
     start_date:{
         type:Date,
