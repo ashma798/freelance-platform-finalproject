@@ -18,7 +18,7 @@ const AdminDashboard = () => {
       const userResponse = await axiosInstance.get('/users/viewClient');
       setUserList(userResponse.data.data);
 
-      const jobResponse = await axiosInstance.get('/users/viewJob');
+      const jobResponse = await axiosInstance.get('/users/listJobs');
       setJobList(jobResponse.data.data);
 
       const freelancerResponse = await axiosInstance.get('/users/getFreelancers');
@@ -107,7 +107,7 @@ const AdminDashboard = () => {
      // console.log(selectedItem.budget);
 Swal.fire({
     title: `
-      <div class="text-2xl font-bold text-gray-800 mb-4">
+      <div class="text-2xl font-bold text-gray-800 mb-2">
         ${type === 'user' ? 'User Details' : 'Job Details'}
       </div>`,
     html: `
@@ -219,7 +219,6 @@ Swal.fire({
                   <th className="py-2 px-4 text-left">Name</th>
                   <th className="py-2 px-4 text-left">Email</th>
                   <th className="py-2 px-4 text-left">Role</th>
-                  <th className="py-2 px-4 text-left">Status</th>
                  <th className="py-2 px-4 text-left">Active/Deactive</th>
                   <th className="py-2 px-4 text-left">Actions</th>
                 </tr>
@@ -230,6 +229,7 @@ Swal.fire({
                     <td className="py-2 px-4">{user.name}</td>
                     <td className="py-2 px-4">{user.email}</td>
                     <td className="py-2 px-4">{user.role}</td>
+                    
                     <td className="py-2 px-4">{user.isActive ? 'Active' : 'Inactive'}</td>
                     <td className="py-2 px-4 flex space-x-4">
                       <button
@@ -270,6 +270,7 @@ Swal.fire({
                   <th className="py-2 px-4 text-left">Job Title</th>
                   <th className="py-2 px-4 text-left">Deadline</th>
                   <th className="py-2 px-4 text-left">Status</th>
+                    <th className="py-2 px-4 text-left">Active/Deactive</th>
                 
                   <th className="py-2 px-4 text-left flex space-x-4">Actions</th>
                 </tr>

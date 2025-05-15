@@ -11,7 +11,7 @@ const jobSchema = new mongoose.Schema({
     {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",
-        required: false
+         default: null
     },
     job_title:
     {

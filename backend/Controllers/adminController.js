@@ -301,7 +301,6 @@ deleteUser = async (req, res) => {
   toggleUserStatus = async (req, res) => {
     try {
       const { id } = req.body;
-  console.log("idxcxcxc:",id);
       if (!id) {
         return res.status(400).json({
           success: false,
@@ -385,5 +384,6 @@ module.exports = {
   jobReport,
   paymentReport,
   toggleUserStatus,
-  toggleJobStatus
+  toggleJobStatus,
+  listJobs
 };

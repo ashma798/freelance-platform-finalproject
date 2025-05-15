@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { verifyToken, checkRole } = require("../Middlewares/auth");
-const {deleteJob,deleteUser,jobReport,clientReport,freelancerReport,paymentReport,toggleUserStatus,toggleJobStatus} = require("../Controllers/adminController");
+const {listJobs,deleteJob,deleteUser,jobReport,clientReport,freelancerReport,paymentReport,toggleUserStatus,toggleJobStatus} = require("../Controllers/adminController");
 const {addReview,viewClient,getUsers,viewJob,jobProfile,clientProfile,getBidDetails,myProposals,completedJobs} = require("../Controllers/userController");
 const {getFreelancerCount,getJobCount,getOpenProjectCount} = require('../Controllers/dashboardController')
 const { myProposal,viewProposals,addProposal,freelancerProfile,inviteFreelancer,bid,checkBid,freelancerBids,myBids} = require("../Controllers/freelancerController");
@@ -13,6 +13,7 @@ const { getWalletDetails, withdrawFunds } = require('../Controllers/walletContro
 /*ADMIN ROUTES*/
 
 router.get('/viewClient',viewClient);
+router.get('/listJobs',verifyToken,checkRole('admin','freelancer'),listJobs);
 router.delete('/deleteUser',verifyToken,checkRole('admin'),deleteUser);
 router.delete('/deleteJob',verifyToken,checkRole(['admin', 'client']),deleteJob);
 router.get('/jobReport',verifyToken,checkRole(['admin']),jobReport);
@@ -44,7 +45,7 @@ router.get('/getUsers/:receiverId', verifyToken, checkRole(['client','freelancer
 /*FREELANCER ROUTES*/
 router.get('/getFreelancers',getFreelancers);
 router.get('/getFreelancers',verifyToken,checkRole(['admin','client','freelancer']),getFreelancers);
-router.get('/viewJob',verifyToken,checkRole(['admin','client','freelancer']),viewJob);
+router.get('/viewJob',verifyToken,checkRole(['client','freelancer']),viewJob);
 router.get('/freelancerProfile/:freelancerId',verifyToken,checkRole(['client','freelancer']),freelancerProfile);
 router.post('/bid',verifyToken,checkRole(['freelancer']),bid);
 router.post('/addProposal',verifyToken,checkRole('freelancer'),addProposal);

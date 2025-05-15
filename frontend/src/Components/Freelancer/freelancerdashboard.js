@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate,useLocation } from 'react-router-dom';
 import axiosInstance from '../axiosConfig/axiosConfig';
 import { toast } from 'react-toastify';
+import { Star } from "lucide-react";
 
 
 const Freelancerdashboard = () => {
@@ -109,7 +110,7 @@ const Freelancerdashboard = () => {
             job._id === jobId ? { ...job, status: "completed" } : job
           )
         );
-        toast.success("Job marked as completed and client notified.");
+        toast.success("Job completed and client will be notified by email.");
 
       }
     } catch (error) {
@@ -253,18 +254,33 @@ const Freelancerdashboard = () => {
                 </div>
 
                 {/* Client Rating and Reviews */}
-                <div className="card-footer text-muted">
-                  <div className="d-flex gap-2">
-                    {[...Array(5)].map((_, idx) => (
-                      <i
-                        key={idx}
-                        className={`bi bi-star-fill ${job.client_rating > idx ? 'text-warning' : 'text-muted'}`}
-                        style={{ fontSize: "1.2rem" }}
-                      ></i>
-                    ))}
-                  </div>
-                  <p className="mt-2">Client Review: {job.client_review || "No reviews yet."}</p>
-                </div>
+               <div className="card-footer text-muted">
+  {job.reviews.length > 0 ? (
+    job.reviews.map((review, index) => (
+      <div key={index} className="mb-3">
+        <div className="d-flex gap-2">
+          <strong>Client Rating:</strong> 
+          {[...Array(5)].map((_, index) => (
+
+             <Star
+          key={index}
+          className={index < review.rating ? "text-yellow-500" : "text-gray-300"}
+            fill={index < review.rating ? "#facc15" : "none"}
+          size={20}
+        
+        />
+          ))}
+        </div>
+        <p className="mt-2">
+          <strong>Client Review:</strong> {review.comment || 'No comment provided.'}
+        </p>
+      </div>
+    ))
+  ) : (
+    <p className="mt-2 text-muted">No reviews yet.</p>
+  )}
+</div>
+
               </div>
             ))
           )}
