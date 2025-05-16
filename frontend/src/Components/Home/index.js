@@ -15,7 +15,6 @@ const Home = () => {
   const [review, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
   useEffect(() => {
     const fetchData = async () => {
       try {
