@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate,useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axiosInstance from '../axiosConfig/axiosConfig';
 import { toast } from 'react-toastify';
 import { Star } from "lucide-react";
@@ -23,22 +23,22 @@ const Freelancerdashboard = () => {
   const loggeduser = JSON.parse(localStorage.getItem("@user"));
   const freelancerId = loggeduser._id;
 
-    useEffect(() => {
-  const FetchJobList = async () => {
-    setIsLoading(true);
-    try {
-      const jobListResponse = await axiosInstance.get('/users/viewJob');
-      setJobList(jobListResponse.data.data);
-      localStorage.setItem('joblist', JSON.stringify(jobListResponse.data.data));
-    } catch (err) {
-      toast.error('Error fetching jobs:');
+  useEffect(() => {
+    const FetchJobList = async () => {
+      setIsLoading(true);
+      try {
+        const jobListResponse = await axiosInstance.get('/users/viewJob');
+        setJobList(jobListResponse.data.data);
+        localStorage.setItem('joblist', JSON.stringify(jobListResponse.data.data));
+      } catch (err) {
+        toast.error('Error fetching jobs:');
+      }
+      finally {
+        setIsLoading(false);
+      }
     }
-    finally {
-      setIsLoading(false);
-    }
-  }
-   FetchJobList();
-  },[location.pathname]);
+    FetchJobList();
+  }, [location.pathname]);
 
 
   const FetchClientList = async () => {
@@ -169,7 +169,7 @@ const Freelancerdashboard = () => {
               <div className="card text-white bg-info mb-3">
                 <div className="card-body">
                   <h5 className="card-title">Posted Proposals</h5>
-                  <p className="card-text">{joblist.filter(job => job.proposalSubmitted).length}</p>
+                  <p className="card-text">{joblist.filter(job => job.client_id).length}</p>
                 </div>
               </div>
             </div>
@@ -190,100 +190,90 @@ const Freelancerdashboard = () => {
 
           {/* Job Listings */}
           <h4 className="mb-3 text-muted">Available Projects</h4>
-          {isLoading ? (
-            <div className="text-center my-4">
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading...</span>
+         
+            {filteredJobs.map((job, index) => (
+          <div className="card mb-4 shadow-lg rounded-4" key={index}>
+            <div className="card-body">
+              <h5 className="card-title text-dark">{job.job_title}</h5>
+              <p className="card-text text-muted">{job.description}</p>
+
+              <div className="d-flex flex-wrap gap-2 mb-3">
+                {job.skills_required.map((skill, idx) => (
+                  <span key={idx} className="badge badge-pill" style={{
+                    backgroundColor: "#6c757d",
+                    color: "#fff",
+                    fontSize: "0.875rem"
+                  }}>
+                    {skill}
+                  </span>
+                ))}
               </div>
-              <p className="mt-2">Loading projects...</p>
-            </div>
-          ) : filteredJobs.length === 0 ? (
-            <div className="col-12 text-center">
-              <p>No projects match your search.</p>
-            </div>
-          ) : (
-            filteredJobs.map((job, index) => (
-              <div className="card mb-4 shadow-lg rounded-4" key={index}>
-                <div className="card-body">
-                  <h5 className="card-title text-dark">{job.job_title}</h5>
-                  <p className="card-text text-muted">{job.description}</p>
 
-                  <div className="d-flex flex-wrap gap-2 mb-3">
-                    {job.skills_required.map((skill, idx) => (
-                      <span key={idx} className="badge badge-pill" style={{
-                        backgroundColor: "#6c757d",
-                        color: "#fff",
-                        fontSize: "0.875rem"
-                      }}>
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="d-flex justify-content-between align-items-center">
-                    <span className="text-success fs-5">₹{parseFloat(job.budget?.$numberDecimal).toFixed(2)}</span>
-                    <div className="flex space-x-2">
-                      <button
-                        className="btn btn-success py-2 px-4 btn-sm"
-                        onClick={() => handleStatusChange(job._id, freelancerId)}
-                        disabled={job.status === "completed"}
-                        style={{
-                          borderRadius: "20px",
-                          backgroundColor: job.status === "completed" ? "#6c757d" : "#28a745",
-                          color: "white",
-                          cursor: job.status === "completed" ? "not-allowed" : "pointer"
-                        }}
-                      >
-                        {job.status === "completed" ? "Completed" : "Pending"}
-                      </button>
+              <div className="d-flex justify-content-between align-items-center">
+                <span className="text-success fs-5">₹{parseFloat(job.budget?.$numberDecimal).toFixed(2)}</span>
+                <div className="flex space-x-2">
+                  <button
+                    className="btn btn-success py-2 px-4 btn-sm"
+                    onClick={() => handleStatusChange(job._id, freelancerId)}
+                    disabled={job.status === "completed"}
+                    style={{
+                      borderRadius: "20px",
+                      backgroundColor: job.status === "completed" ? "#6c757d" : "#28a745",
+                      color: "white",
+                      cursor: job.status === "completed" ? "not-allowed" : "pointer"
+                    }}
+                  >
+                    {job.status === "completed" ? "Completed" : "Pending"}
+                  </button>
 
 
-                      <button
-                        className={`btn btn-outline-primary btn-sm ${submittedBids.includes(job._id) ? 'bg-gray-400 text-white border-0' : ''
-                          }`}
-                        onClick={() => handleBidClick(job._id, freelancerId, job.client_id)}
-                        disabled={submittedBids.includes(job._id)}
-                        style={{ borderRadius: '20px' }}
-                      >
-                        {submittedBids.includes(job._id) ? 'Bid Submitted' : 'Free to Bid'}
-                      </button>
+                  <button
+                    className={`btn btn-outline-primary btn-sm ${submittedBids.includes(job._id) ? 'bg-gray-400 text-white border-0' : ''
+                      }`}
+                    onClick={() => handleBidClick(job._id, freelancerId, job.client_id)}
+                    disabled={submittedBids.includes(job._id)}
+                    style={{ borderRadius: '20px' }}
+                  >
+                    {submittedBids.includes(job._id) ? 'Bid Submitted' : 'Free to Bid'}
+                  </button>
 
 
-                    </div>
-                  </div>
                 </div>
-
-                {/* Client Rating and Reviews */}
-               <div className="card-footer text-muted">
-  {job.reviews.length > 0 ? (
-    job.reviews.map((review, index) => (
-      <div key={index} className="mb-3">
-        <div className="d-flex gap-2">
-          <strong>Client Rating:</strong> 
-          {[...Array(5)].map((_, index) => (
-
-             <Star
-          key={index}
-          className={index < review.rating ? "text-yellow-500" : "text-gray-300"}
-            fill={index < review.rating ? "#facc15" : "none"}
-          size={20}
-        
-        />
-          ))}
-        </div>
-        <p className="mt-2">
-          <strong>Client Review:</strong> {review.comment || 'No comment provided.'}
-        </p>
-      </div>
-    ))
-  ) : (
-    <p className="mt-2 text-muted">No reviews yet.</p>
-  )}
-</div>
-
               </div>
-            ))
-          )}
+            </div>
+
+            {/* Client Rating and Reviews */}
+            <div className="card-footer text-muted">
+              {job.reviews.length > 0 ? (
+                job.reviews.map((review, index) => (
+                  <div key={index} className="mb-3">
+                    <div className="d-flex gap-2">
+                      <strong>Client Rating:</strong>
+                      {[...Array(5)].map((_, index) => (
+
+                        <Star
+                          key={index}
+                          className={index < review.rating ? "text-yellow-500" : "text-gray-300"}
+                          fill={index < review.rating ? "#facc15" : "none"}
+                          size={20}
+
+                        />
+                      ))}
+                    </div>
+                    <p className="mt-2">
+                      <strong>Client Review:</strong> {review.comment || 'No comment provided.'}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="mt-2 text-muted">No reviews yet.</p>
+              )}
+            </div>
+
+          </div>
+         
+         ))}
+        {filteredJobs.length === 0 && <p className="text-muted">No freelancers found.</p>}
         </div>
 
         {/* Right Column: Clients */}

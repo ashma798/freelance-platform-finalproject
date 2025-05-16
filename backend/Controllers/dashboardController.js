@@ -83,7 +83,7 @@ getOpenProjectCount = async (req, res) => {
 getProposalCount = async (req, res) => {
     try {
         const clientId = req.userId;
-        const proposalCount = await proposalModel.countDocuments({
+        const proposalCount = await bidModel.countDocuments({
             client_id: clientId,
             
         });

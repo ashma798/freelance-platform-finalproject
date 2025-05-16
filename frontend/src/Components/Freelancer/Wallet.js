@@ -47,6 +47,19 @@ const Wallet = () => {
         setWalletBalance(response.data.balance);
         setWithdrawAmount('');
       }
+      if (response.data.newTransaction) {
+        setTransactions(prevTransactions => [
+          response.data.newTransaction,
+          ...prevTransactions,
+        ]);
+      } else {
+        const txnResponse = await axiosInstance.get(`/users/getWalletDetails/${freelancerId}`);
+        if (txnResponse.status === 200) {
+          setTransactions(txnResponse.data.transactions);
+        }
+      }
+
+      setWithdrawAmount('');
     } catch (error) {
       console.error('Error:', error);
       toast.error('Withdrawal failed');

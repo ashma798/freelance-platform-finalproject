@@ -115,7 +115,7 @@ deleteUser = async (req, res) => {
   },
   Clients = async (req, res) => {
     try {
-      const allClient = await userModel.find({ role: 'client',isDeleted : 'false' });
+      const allClient = await userModel.find({ role: 'client', isDeleted: 'false' });
 
       return res.status(200).json({
         success: true,
@@ -196,7 +196,7 @@ deleteUser = async (req, res) => {
     try {
       let filter = {
         role: 'freelancer',
-        
+
       };
 
       if (search) {
@@ -213,12 +213,12 @@ deleteUser = async (req, res) => {
       res.status(500).send('Error fetching clients');
     }
   },
-   paymentReport = async (req, res) => {
+  paymentReport = async (req, res) => {
     const { search, status } = req.query;
-  
+
     try {
       let query = {};
-  
+
       // Apply job search filter if provided
       if (search) {
         query.$or = [
@@ -226,11 +226,11 @@ deleteUser = async (req, res) => {
           { 'client_id.name': { $regex: search, $options: 'i' } }
         ];
       }
-  
+
       if (status) {
         query.status = status;
       }
-  
+
       const payments = await Payment.find(query)
         .populate('job_id', 'job_title client_id budget deadline status')
         .populate('client_id', 'name email phone country role')
@@ -245,14 +245,14 @@ deleteUser = async (req, res) => {
         paymentMethod: payment.method,
         transactionId: payment.transactionId,
       }));
-  
+
       res.status(200).json(reportData);
     } catch (error) {
       console.error('Error fetching payment reports:', error);
       res.status(500).json({ message: 'Server error' });
     }
   },
-  
+
 
   jobReport = async (req, res) => {
     const { status, search } = req.query;
@@ -307,19 +307,19 @@ deleteUser = async (req, res) => {
           message: 'User ID is required',
         });
       }
-  
+
       const user = await userModel.findById(id);
-  
+
       if (!user) {
         return res.status(404).json({
           success: false,
           message: 'User not found',
         });
       }
-  
+
       user.isActive = !user.isActive;
       await user.save();
-  
+
       return res.status(200).json({
         success: true,
         message: `User ${user.isActive ? 'activated' : 'deactivated'} successfully`,
@@ -333,31 +333,31 @@ deleteUser = async (req, res) => {
       });
     }
   },
-  
- 
- toggleJobStatus = async (req, res) => {
+
+
+  toggleJobStatus = async (req, res) => {
     try {
       const { id } = req.body;
-  
+
       if (!id) {
         return res.status(400).json({
           success: false,
           message: 'Job ID is required',
         });
       }
-  
+
       const job = await jobModel.findById(id);
-  
+
       if (!job) {
         return res.status(404).json({
           success: false,
           message: 'Job not found',
         });
       }
-  
+
       job.isActive = !job.isActive;
       await job.save();
-  
+
       return res.status(200).json({
         success: true,
         message: `Job ${job.isActive ? 'activated' : 'deactivated'} successfully`,
@@ -370,7 +370,92 @@ deleteUser = async (req, res) => {
         message: 'Internal Server Error',
       });
     }
+  },
+  getFreelancerDetails = async (req, res) => {
+
+    try {
+
+      const freelancers = await userModel.aggregate([
+        {
+          $match: { role: "freelancer" }
+        },
+        {
+          $lookup: {
+            from: "freelancerprofiles",
+            localField: "_id",
+            foreignField: "user_id",
+            as: "profile"
+          }
+        },
+        {
+          $unwind: "$profile"
+        },
+        {
+          $lookup: {
+            from: "reviews",
+            let: { freelancerId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ["$reviewee_id", "$$freelancerId"]
+                  }
+                }
+              },
+              {
+                $group: {
+                  _id: null,
+                  avgRating: { $avg: "$rating" },
+                  reviewCount: { $sum: 1 }
+                }
+              },
+              {
+                $project: {
+                  _id: 0,
+                  avgRating: { $ifNull: ["$avgRating", 0] },
+                  reviewCount: { $ifNull: ["$reviewCount", 0] }
+                }
+              }
+            ],
+            as: "reviewStats"
+          }
+        },
+        {
+          $project: {
+            name: 1,
+            username: 1,
+            email: 1,
+            country: 1,
+            phone: 1,
+            image: 1,
+            portfolio_links: "$profile.portfolio_links",
+            skills: "$profile.skills",
+            experience: "$profile.experience",
+            hourly_rate: "$profile.hourly_rate",
+            avgRating: { $ifNull: [{ $arrayElemAt: ["$reviewStats.avgRating", 0] }, 0] },
+            reviewCount: { $ifNull: [{ $arrayElemAt: ["$reviewStats.reviewCount", 0] }, 0] }
+          }
+        }
+      ]);
+
+      res.status(200).json({
+        success: true,
+        statusCode: 200,
+        message: "Freelancer list fetched successfully",
+        data: freelancers
+      });
+    }
+    catch (error) {
+      console.error("Error fetching freelancers:", error);
+      res.status(500).json({
+        success: false,
+        statusCode: 500,
+        message: "Failed to fetch freelancers",
+        error: error.message
+      });
+    }
   };
+
 
 
 module.exports = {
@@ -385,5 +470,6 @@ module.exports = {
   paymentReport,
   toggleUserStatus,
   toggleJobStatus,
-  listJobs
+  listJobs,
+  getFreelancerDetails
 };

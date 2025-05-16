@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { verifyToken, checkRole } = require("../Middlewares/auth");
-const {listJobs,deleteJob,deleteUser,jobReport,clientReport,freelancerReport,paymentReport,toggleUserStatus,toggleJobStatus} = require("../Controllers/adminController");
+const {getFreelancerDetails,listJobs,deleteJob,deleteUser,jobReport,clientReport,freelancerReport,paymentReport,toggleUserStatus,toggleJobStatus} = require("../Controllers/adminController");
 const {addReview,viewClient,getUsers,viewJob,jobProfile,clientProfile,getBidDetails,myProposals,completedJobs} = require("../Controllers/userController");
 const {getFreelancerCount,getJobCount,getOpenProjectCount} = require('../Controllers/dashboardController')
 const { myProposal,viewProposals,addProposal,freelancerProfile,inviteFreelancer,bid,checkBid,freelancerBids,myBids} = require("../Controllers/freelancerController");
@@ -9,11 +9,13 @@ const { myProposal,viewProposals,addProposal,freelancerProfile,inviteFreelancer,
 const { createPayment,initialPaymentRelease,markAsCompleted,finalPaymentRelease,finalDetails } = require('../Controllers/paymentController');
 const { getWalletDetails, withdrawFunds } = require('../Controllers/walletController');
 
+/* HOME ROUTES*/
+router.get('/viewClient',viewClient);
+router.get('/viewReview',viewReview);
+router.get('/getFreelancerDetails',getFreelancerDetails);
 
 /*ADMIN ROUTES*/
-
-router.get('/viewClient',viewClient);
-router.get('/listJobs',verifyToken,checkRole('admin','freelancer'),listJobs);
+router.get('/listJobs',verifyToken,checkRole(['admin','freelancer']),listJobs);
 router.delete('/deleteUser',verifyToken,checkRole('admin'),deleteUser);
 router.delete('/deleteJob',verifyToken,checkRole(['admin', 'client']),deleteJob);
 router.get('/jobReport',verifyToken,checkRole(['admin']),jobReport);
@@ -22,7 +24,6 @@ router.get('/freelancerReport',verifyToken,checkRole(['admin']),freelancerReport
 router.get('/paymentReport',verifyToken,checkRole(['admin']),paymentReport);
 router.post('/toggleUserStatus',verifyToken,checkRole(['admin']),toggleUserStatus);
 router.post('/toggleJobStatus',verifyToken,checkRole(['admin']),toggleJobStatus);
-
 
 
 /*client routes*/
@@ -43,7 +44,6 @@ router.get('/getBidDetails/:bidId',verifyToken,checkRole(['client','freelancer']
 router.get('/getUsers/:receiverId', verifyToken, checkRole(['client','freelancer']), getUsers);
 
 /*FREELANCER ROUTES*/
-router.get('/getFreelancers',getFreelancers);
 router.get('/getFreelancers',verifyToken,checkRole(['admin','client','freelancer']),getFreelancers);
 router.get('/viewJob',verifyToken,checkRole(['client','freelancer']),viewJob);
 router.get('/freelancerProfile/:freelancerId',verifyToken,checkRole(['client','freelancer']),freelancerProfile);
@@ -58,7 +58,7 @@ router.get('/myBids/:freelancerId', verifyToken, checkRole(['freelancer']), myBi
 router.get('/getWalletDetails/:freelancerId',verifyToken,checkRole(['freelancer']),getWalletDetails);
 router.post('/withdrawFunds',verifyToken,checkRole(['freelancer']), withdrawFunds);
 
-// Route to withdraw funds
+
 /*PAYMENT ROUTES*/
 router.post('/createPayment',verifyToken,checkRole(['client']),createPayment);
 router.post('/initialPaymentRelease',verifyToken,checkRole(['client','freelancer']),initialPaymentRelease);
