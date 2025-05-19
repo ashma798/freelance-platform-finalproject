@@ -138,8 +138,8 @@ const createPayment = async (req, res) => {
         return res.status(404).json({ message: 'Freelancer not found' });
       }
 
-      // const finalPayLink = `https://freelance-platform-finalproject.vercel.app/FinalPayment/${bidId}`; 
-      const finalPayLink = `http://localhost:3000/FinalPayment/${bidId}`;
+      const finalPayLink = `https://freelance-platform-finalproject.vercel.app/FinalPayment/${bidId}`; 
+      //const finalPayLink = `http://localhost:3000/FinalPayment/${bidId}`;
 
       await sendEmail({
         fromEmail: freelancer.email,
