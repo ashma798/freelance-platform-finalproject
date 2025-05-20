@@ -23,7 +23,7 @@ const Freelancerdashboard = () => {
   const loggeduser = JSON.parse(localStorage.getItem("@user"));
   const freelancerId = loggeduser._id;
 
-  useEffect(() => {
+  
     const FetchJobList = async () => {
       setIsLoading(true);
       try {
@@ -37,7 +37,10 @@ const Freelancerdashboard = () => {
         setIsLoading(false);
       }
     }
+    useEffect(() => {
+      if(freelancerId){
     FetchJobList();
+      }
   }, [location.pathname]);
 
 
